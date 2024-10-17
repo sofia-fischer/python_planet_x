@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-planet-x"
+name = "planet-x"
 version = "0.1.0"
 description = "Planet X single player game jin python django"
 authors = ["sofia"]
