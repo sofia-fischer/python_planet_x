@@ -1,7 +1,7 @@
 from random import shuffle
 
-from board.Exceptions.board_exception import BoardValidationException
-from board.valueObjects.luminary import Luminary
+from app.Exceptions.board_exception import BoardValidationException
+from app.valueObjects.luminary import Luminary
 
 
 class Board:

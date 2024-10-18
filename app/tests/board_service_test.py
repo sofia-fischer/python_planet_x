@@ -1,7 +1,7 @@
 from django.test import TestCase
-from board.services.board_service import GenerationService
-from board.valueObjects.board import Board
-from board.valueObjects.luminary import Luminary
+from app.services.board_service import GenerationService
+from app.valueObjects.board import Board
+from app.valueObjects.luminary import Luminary
 
 
 class TestGenerationService(TestCase):

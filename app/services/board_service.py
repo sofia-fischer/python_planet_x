@@ -1,7 +1,7 @@
 from random import randrange, sample, choice, shuffle
-from board.Exceptions.board_exception import BoardGenerationException
-from board.valueObjects.board import Board
-from board.valueObjects.luminary import Luminary
+from app.Exceptions.board_exception import BoardGenerationException
+from app.valueObjects.board import Board
+from app.valueObjects.luminary import Luminary
 
 
 class GenerationService:
