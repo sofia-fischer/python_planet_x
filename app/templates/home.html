@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Hello there</title>
-</head>
-<body>
-{{ content }}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="flex flex-col items-center h-full justify-center">
+        <div class="fill-white stroke-white w-20 h-20 ">
+            {% include "icons/planet-x-icon.html" %}
+        </div>
+        <h class="text-white font-mono m-5">Search for Planet X</h>
+
+        <div class="w-full m-2 mt-14 max-w-lg">
+            <button class="right-0 h-10 w-full rounded bg-teal-600 text-white hover:bg-teal-700">
+                Start new Game
+            </button>
+        </div>
+
+        <div class="flex items-center mt-14 m-2 w-full max-w-lg">
+            <input id="identifier" type="text" placeholder="3XA-MP7-ES5"
+                   class="h-10 w-full rounded-md bg-gray-50 focus:border-teal-600"/>
+            <button class="ml-4 h-10 w-1/2 rounded bg-teal-600 text-white hover:bg-teal-700">
+                Continue Game
+            </button>
+        </div>
+    </div>
+
+{% endblock content %}
