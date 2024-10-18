@@ -1,4 +1,4 @@
-from random import randrange, sample, choice, shuffle
+from random import randrange, choice
 from app.Exceptions.board_exception import BoardGenerationException
 from app.valueObjects.board import Board
 from app.valueObjects.luminary import Luminary
