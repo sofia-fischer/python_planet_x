@@ -1,11 +1,11 @@
 from django.test import TestCase
-from app.valueObjects.board import Board
+from app.valueObjects.sectors import Sectors
 from app.valueObjects.luminary import Luminary
 
 
 class TestBoard(TestCase):
     def test_set_edge_case_of_empty_band_of_three(self) -> None:
-        board = Board().fill({
+        board = Sectors().fill({
             0: Luminary(0),
             1: Luminary.MOON,
             2: Luminary(0),

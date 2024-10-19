@@ -18,7 +18,7 @@ class Luminary(Flag):
         return not bool(self)
 
     @staticmethod
-    def all():
+    def fill_with_all():
         return Luminary.ASTEROID | Luminary.MOON | Luminary.NEBULA | Luminary.PLANET | Luminary.PLANET_X | Luminary.EMPTY_SPACE
 
     def __str__(self):

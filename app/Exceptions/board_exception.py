@@ -1,4 +1,4 @@
-class BoardGenerationException(Exception):
+class SectorGenerationException(Exception):
     pass
 
 class BoardValidationException(Exception):

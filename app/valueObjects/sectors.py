@@ -4,13 +4,16 @@ from app.Exceptions.board_exception import BoardValidationException
 from app.valueObjects.luminary import Luminary
 
 
-class Board:
+class Sectors:
     SIZE = 12
+    sectors: dict[int, Luminary]
+    current: int = 0
+    high: int = 12
 
     def __init__(self):
         self.sectors = {x: Luminary(0) for x in range(self.SIZE)}
 
-    def fill(self, board: dict[int, Luminary]) -> 'Board':
+    def fill(self, board: dict[int, Luminary]) -> 'Sectors':
         if board.keys() != self.sectors.keys():
             raise BoardValidationException("Invalid board")
         self.sectors = board
@@ -51,8 +54,8 @@ class Board:
             raise BoardValidationException(f"Key {key} not in board")
         self.sectors[key] = value
 
-    def copy(self) -> 'Board':
-        return Board().fill(self.sectors.copy())
+    def copy(self) -> 'Sectors':
+        return Sectors().fill(self.sectors.copy())
 
     def values(self) -> list[Luminary]:
         return list(self.sectors.values())
