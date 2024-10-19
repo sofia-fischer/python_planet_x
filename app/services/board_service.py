@@ -15,7 +15,7 @@ class GenerationService:
         # While working I learned, that the moment you have to use those, your problem is too big for a web developer
 
         # randomly place planet x
-        planet_x_index = randrange(0, Sectors.SIZE)
+        planet_x_index = randrange(0, Sectors.COUNT)
         sectors[planet_x_index] = Luminary.PLANET_X
 
         # down to 48.828.125 possible boards
@@ -50,11 +50,11 @@ class GenerationService:
 
         # If both moons are placed two away from the planet x, the dwarf planet can't be placed there.
         # The dwarf planet and one gas cloud are the only icons that can be placed in "Single Sectors"
-        if (planet_x_index + 2) % Sectors.SIZE== moon_index1:
-            allowed_indexes = allowed_indexes - {(planet_x_index - 2) % Sectors.SIZE}
+        if (planet_x_index + 2) % Sectors.COUNT== moon_index1:
+            allowed_indexes = allowed_indexes - {(planet_x_index - 2) % Sectors.COUNT}
 
-        if (planet_x_index - 2) % Sectors.SIZE== moon_index1:
-            allowed_indexes = allowed_indexes - {(planet_x_index + 2) % Sectors.SIZE}
+        if (planet_x_index - 2) % Sectors.COUNT== moon_index1:
+            allowed_indexes = allowed_indexes - {(planet_x_index + 2) % Sectors.COUNT}
 
         moon_index2 = choice(tuple(allowed_indexes))
         board[moon_index2] = Luminary.MOON
@@ -64,8 +64,8 @@ class GenerationService:
         # the dwarf planet must be placed in a way such that at most one single sector is created
         # and it can not be placed next to the planet x
         for index in board.get_empty_sectors_shuffled():
-            if (board[(index + 1) % Sectors.SIZE] == Luminary.PLANET_X
-                    or board[(index - 1) % Sectors.SIZE] == Luminary.PLANET_X):
+            if (board[(index + 1) % Sectors.COUNT] == Luminary.PLANET_X
+                    or board[(index - 1) % Sectors.COUNT] == Luminary.PLANET_X):
                 continue
             future_board = board.copy()
             future_board[index] = Luminary.PLANET
@@ -78,19 +78,19 @@ class GenerationService:
 
     def __set_nebulae_in_single_and_triplet(self, board: Sectors) -> Sectors:
         for index in board.get_empty_sectors_shuffled():
-            if board[(index + 1) % Sectors.SIZE] or board[(index + 2) % Sectors.SIZE]:
+            if board[(index + 1) % Sectors.COUNT] or board[(index + 2) % Sectors.COUNT]:
                 continue
 
             future_board = board.copy()
             future_board[index] = Luminary.NEBULA
-            future_board[(index + 1) % Sectors.SIZE] = Luminary.EMPTY_SPACE
-            future_board[(index + 2) % Sectors.SIZE] = Luminary.NEBULA
+            future_board[(index + 1) % Sectors.COUNT] = Luminary.EMPTY_SPACE
+            future_board[(index + 2) % Sectors.COUNT] = Luminary.NEBULA
             if len(future_board.get_single_sectors()) > 1:
                 continue
 
             board[index] = Luminary.NEBULA
-            board[(index + 1) % Sectors.SIZE] = Luminary.EMPTY_SPACE
-            board[(index + 2) % Sectors.SIZE] = Luminary.NEBULA
+            board[(index + 1) % Sectors.COUNT] = Luminary.EMPTY_SPACE
+            board[(index + 2) % Sectors.COUNT] = Luminary.NEBULA
             if len(board.get_single_sectors()) == 1:
                 board[board.get_single_sectors()[0]] = Luminary.EMPTY_SPACE
                 return board
@@ -107,17 +107,17 @@ class GenerationService:
 
     def __set_nebulae_in_pairs(self, board: Sectors) -> Sectors:
         for index in board.get_empty_sectors_shuffled():
-            if board[index] or board[(index + 1) % Sectors.SIZE]:
+            if board[index] or board[(index + 1) % Sectors.COUNT]:
                 continue
 
             future_board = board.copy()
             future_board[index] = Luminary.NEBULA
-            future_board[(index + 1) % Sectors.SIZE] = Luminary.EMPTY_SPACE
+            future_board[(index + 1) % Sectors.COUNT] = Luminary.EMPTY_SPACE
             if len(future_board.get_single_sectors()) > 0:
                 continue
 
             switch = randrange(0, 2)
             board[index] = Luminary.NEBULA if switch else Luminary.EMPTY_SPACE
-            board[(index + 1) % Sectors.SIZE] = Luminary.EMPTY_SPACE if switch else Luminary.NEBULA
+            board[(index + 1) % Sectors.COUNT] = Luminary.EMPTY_SPACE if switch else Luminary.NEBULA
             return board
         raise SectorGenerationException("No valid sector for the nebula in pairs found: " + str(board))

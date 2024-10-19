@@ -5,13 +5,13 @@ from app.valueObjects.luminary import Luminary
 
 
 class Sectors:
-    SIZE = 12
+    COUNT = 12
     sectors: dict[int, Luminary]
     current: int = 0
     high: int = 12
 
     def __init__(self):
-        self.sectors = {x: Luminary(0) for x in range(self.SIZE)}
+        self.sectors = {x: Luminary(0) for x in range(self.COUNT)}
 
     def fill(self, board: dict[int, Luminary]) -> 'Sectors':
         if board.keys() != self.sectors.keys():
@@ -22,22 +22,22 @@ class Sectors:
     def get_single_sectors(self) -> list[int]:
         result: list[int] = []
         for sector, luminary in self.sectors.items():
-            predecessor = self.sectors[(sector - 1) % self.SIZE]
-            successor = self.sectors[(sector + 1) % self.SIZE]
+            predecessor = self.sectors[(sector - 1) % self.COUNT]
+            successor = self.sectors[(sector + 1) % self.COUNT]
             if luminary.is_unfilled() and bool(predecessor) and bool(successor):
                 result.append(sector)
         return result
 
     def has_band_of_three_unfilled_sectors(self) -> bool:
         for sector, luminary in self.sectors.items():
-            predecessor = self.sectors[(sector - 1) % self.SIZE]
-            successor = self.sectors[(sector + 1) % self.SIZE]
+            predecessor = self.sectors[(sector - 1) % self.COUNT]
+            successor = self.sectors[(sector + 1) % self.COUNT]
             if luminary.is_unfilled() and predecessor.is_unfilled() and successor.is_unfilled():
                 return True
         return False
 
     def get_predecessor(self, sector: int, skip: int = 0) -> Luminary:
-        return self.sectors[(sector - 1 + skip) % self.SIZE]
+        return self.sectors[(sector - 1 + skip) % self.COUNT]
 
     def get_empty_sectors_shuffled(self) -> list[int]:
         sectors = [index for index, luminary in self.sectors.items() if luminary.is_unfilled()]

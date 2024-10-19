@@ -19,9 +19,9 @@ class ViewSector:
 
     @staticmethod
     def create_from(sectors: Sectors, index: int, timer: int) -> 'ViewSector':
-        visible_start = timer % Sectors.SIZE
-        visible_indices = {visible % Sectors.SIZE for visible in
-                           range(visible_start, visible_start + (Sectors.SIZE // 2))}
+        visible_start = timer % Sectors.COUNT
+        visible_indices = {visible % Sectors.COUNT for visible in
+                           range(visible_start, visible_start + (Sectors.COUNT // 2))}
 
         return ViewSector(
             visible_sky=index in visible_indices,
@@ -47,8 +47,9 @@ class ViewBoard:
     @staticmethod
     def create_from(board: Sectors, timer: int) -> 'ViewBoard':
         visible_degree = ViewBoard.get_visible_degree(timer)
-        left_board = [ViewSector.create_from(board, index, timer) for index in range(0, Sectors.SIZE // 2)]
-        right_board = [ViewSector.create_from(board, index, timer) for index in range(Sectors.SIZE // 2, Sectors.SIZE)]
+        left_board = [ViewSector.create_from(board, index, timer) for index in range(0, Sectors.COUNT // 2)]
+        right_board = reversed(
+            [ViewSector.create_from(board, index, timer) for index in range(Sectors.COUNT // 2, Sectors.COUNT)])
         return ViewBoard(left_board, right_board, visible_degree, [luminary.name for luminary in Luminary], timer)
 
     @staticmethod
@@ -68,4 +69,4 @@ class ViewBoard:
             11: 150
         }
 
-        return degrees[timer % Sectors.SIZE]
+        return degrees[timer % Sectors.COUNT]

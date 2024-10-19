@@ -19,13 +19,13 @@ class TestGenerationService(TestCase):
         # Correct Constraints
         for index, luminary in board.sectors.items():
             if luminary == Luminary.PLANET:
-                assert board[(index - 1) % Sectors.SIZE] != Luminary.PLANET_X
-                assert board[(index + 1) % Sectors.SIZE] != Luminary.PLANET_X
+                assert board[(index - 1) % Sectors.COUNT] != Luminary.PLANET_X
+                assert board[(index + 1) % Sectors.COUNT] != Luminary.PLANET_X
             if luminary == Luminary.NEBULA:
-                assert (board[(index + 1) % Sectors.SIZE] == Luminary.EMPTY_SPACE
-                        or board[(index - 1) % Sectors.SIZE] == Luminary.EMPTY_SPACE)
+                assert (board[(index + 1) % Sectors.COUNT] == Luminary.EMPTY_SPACE
+                        or board[(index - 1) % Sectors.COUNT] == Luminary.EMPTY_SPACE)
             if luminary == Luminary.MOON:
                 assert index in GenerationService.POSSIBLE_MOON_SECTORS
             if luminary == Luminary.ASTEROID:
-                assert (board[(index + 1) % Sectors.SIZE] == Luminary.ASTEROID
-                        or board[(index - 1) % Sectors.SIZE] == Luminary.ASTEROID)
+                assert (board[(index + 1) % Sectors.COUNT] == Luminary.ASTEROID
+                        or board[(index - 1) % Sectors.COUNT] == Luminary.ASTEROID)
