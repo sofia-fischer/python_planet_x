@@ -1,0 +1,25 @@
+<li class="mx-1 h-8">
+    <input type="checkbox"
+           id="sector_{{ index }}_{{ icon }}"
+            {% if filled %}checked {% endif %}
+           class="absolute peer invisible h-0 w-0"/>
+
+    <label class="peer-checked:fill-yellow-300 fill-slate-500 peer-checked:stroke-yellow-300 stroke-slate-500"
+           title="{{ icon }}" for="sector_{{ index }}_{{ icon }}">
+        {% if icon == "ASTEROID" %}
+            {% include "icons/asteroid-icon.html" %}
+        {% elif icon == "MOON" %}
+            {% include "icons/moon-icon.html" %}
+        {% elif icon == "NEBULA" %}
+            {% include "icons/galaxy-icon.html" %}
+        {% elif icon == "PLANET" %}
+            {% include "icons/planet-icon.html" %}
+        {% elif icon == "PLANET_X" %}
+            {% include "icons/planet-x-icon.html" %}
+        {% elif icon == "EMPTY_SPACE" %}
+            {% include "icons/empty-space-icon.html" %}
+        {% else %}
+            <div></div>
+        {% endif %}
+    </label>
+</li>

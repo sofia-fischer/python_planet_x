@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="w-full">
+
+        {# Time Line #}
+
+        {# Theories #}
+
+        <div class="w-full flex justify-center">
+            <form
+                    method="POST"
+                    style="background: linear-gradient({{ board.visible_degree }}deg, #0f766e 0%, rgb(51, 65, 85, 1) 40%);"
+                    class="m-1 px-3 rounded-full p-2 max-w-2xl">
+
+                <div class="flex justify-evenly w-full py-5 ">
+                    <div class="px-1">
+                        {% for sector in board.left_board %}
+                            <ul class="first:ml-16 last:ml-16 [&:nth-child(2)]:ml-6 [&:nth-child(5)]:ml-6 h-12
+                    flex items-center justify-between bg-slate-800 rounded-full my-2 px-2 border-teal-400 {% if sector.visible_sky %} border-2 {% endif %} ">
+                                <div class="bg-slate-500 rounded-full px-1 text-xs"> {{ sector.index | add:1 }} </div>
+
+                                {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x %}
+                                {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space %}
+                                {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula %}
+                                {% include "icon.html" with icon="PLANET" index=sector.index filled=sector.planet %}
+                                {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid %}
+                                {% if sector.can_have_moon %}
+                                    {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon %}
+                                {% else %}
+                                    <li class="m-4"></li>
+                                {% endif %}
+                            </ul>
+                        {% endfor %}
+                    </div>
+                    <div class="px-1">
+                        {% for sector in board.right_board %}
+                            <ul class="first:mr-16 last:mr-16 [&:nth-child(2)]:mr-6 [&:nth-child(5)]:mr-6 h-12
+                    flex items-center justify-between bg-slate-800 rounded-full my-2 px-2 border-blue-400">
+
+                                {% if sector.can_have_moon %}
+                                    {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon %}
+                                {% else %}
+                                    <li class="m-4"></li>
+                                {% endif %}
+                                {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid %}
+                                {% include "icon.html" with icon="PLANET" index=sector.index filled=sector.planet %}
+                                {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula %}
+                                {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space %}
+                                {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x %}
+
+                                <div class="bg-slate-500 rounded-full px-1 text-xs"> {{ sector.index | add:1 }} </div>
+                            </ul>
+                        {% endfor %}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {# Rules #}
+
+        {# Actions #}
+    </div>
+
+
+{% endblock content %}
