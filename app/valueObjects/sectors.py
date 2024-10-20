@@ -8,7 +8,6 @@ class Sectors:
     COUNT = 12
     sectors: dict[int, Luminary]
     current: int = 0
-    high: int = 12
 
     def __init__(self):
         self.sectors = {x: Luminary(0) for x in range(self.COUNT)}
@@ -62,3 +61,13 @@ class Sectors:
 
     def __str__(self) -> str:
         return str({sector: str(luminary) for sector, luminary in self.sectors})
+
+    def __iter__(self):
+        return iter(self.sectors.items())
+
+    def __next__(self):
+        if self.current < self.COUNT:
+            self.current += 1
+            return self.sectors[self.current - 1]
+        self.current = 0
+        raise StopIteration
