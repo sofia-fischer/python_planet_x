@@ -1,10 +1,18 @@
+from abc import abstractmethod
 from dataclasses import dataclass
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.sectors import Sectors
 
 
 @dataclass
-class InSectorRule:
+class BaseRule:
+    @abstractmethod
+    def valid(self, sectors: Sectors) -> str | None:
+        pass
+
+
+@dataclass
+class InSectorRule(BaseRule):
     icon: Luminary
     sector: int
 
@@ -16,7 +24,7 @@ class InSectorRule:
 
 
 @dataclass
-class NotInSectorRule:
+class NotInSectorRule(BaseRule):
     icon: Luminary
     sector: int
 
@@ -28,7 +36,7 @@ class NotInSectorRule:
 
 
 @dataclass
-class NextToRule:
+class NextToRule(BaseRule):
     icon: Luminary
     next_to: Luminary
 
@@ -43,7 +51,7 @@ class NextToRule:
 
 
 @dataclass
-class NotNextToRule:
+class NotNextToRule(BaseRule):
     icon: Luminary
     not_next_to: Luminary
 
@@ -58,7 +66,7 @@ class NotNextToRule:
 
 
 @dataclass
-class CountInSectorsRule:
+class CountInSectorsRule(BaseRule):
     icon: Luminary
     start: int
     end: int
@@ -79,7 +87,7 @@ class CountInSectorsRule:
 
 
 @dataclass
-class BandOfSectorsRule:
+class BandOfSectorsRule(BaseRule):
     icon: Luminary
     band: int
 
@@ -100,7 +108,7 @@ class BandOfSectorsRule:
 
 
 @dataclass
-class NotWithinNSectorsRule:
+class NotWithinNSectorsRule(BaseRule):
     icon: Luminary
     other_icon: Luminary
     within: int
@@ -117,7 +125,7 @@ class NotWithinNSectorsRule:
 
 
 @dataclass
-class WithinNSectorsRule:
+class WithinNSectorsRule(BaseRule):
     icon: Luminary
     other_icon: Luminary
     within: int

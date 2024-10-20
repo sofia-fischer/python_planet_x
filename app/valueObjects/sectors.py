@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from random import shuffle
 
 from app.Exceptions.board_exception import BoardValidationException
 from app.valueObjects.luminary import Luminary
+from app.valueObjects.rules import BaseRule
 
 
 class Sectors:
@@ -71,3 +73,14 @@ class Sectors:
             return self.sectors[self.current - 1]
         self.current = 0
         raise StopIteration
+
+@dataclass
+class Conferences():
+    alpha: BaseRule
+    beta: BaseRule
+    gamma: BaseRule
+    delta: BaseRule
+    epsilon: BaseRule
+    roh: BaseRule
+    xi: BaseRule
+
