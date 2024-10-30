@@ -1,13 +1,17 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.sectors import Sectors
 
 
 @dataclass
-class BaseRule:
+class BaseRule(ABC):
     @abstractmethod
     def valid(self, sectors: Sectors) -> str | None:
+        pass
+
+    @abstractmethod
+    def description(self) -> str:
         pass
 
 
@@ -20,7 +24,10 @@ class InSectorRule(BaseRule):
         if self.icon in sectors[self.sector]:
             return None
 
-        return f"{self.icon.name} is not in sector {self.sector + 1}."
+        return f"{self.icon.to_string()} is not in sector {self.sector + 1}."
+
+    def description(self) -> str:
+        return f"In sector {self.sector + 1} is {self.icon.to_string()}."
 
 
 @dataclass
@@ -32,7 +39,10 @@ class NotInSectorRule(BaseRule):
         if self.icon not in sectors[self.sector]:
             return None
 
-        return f"{self.icon.name} is in sector {self.sector + 1}."
+        return f"{self.icon.to_string()} is in sector {self.sector + 1}."
+
+    def description(self) -> str:
+        return f"In sector {self.sector + 1} is no {self.icon.to_string()}."
 
 
 @dataclass
@@ -46,8 +56,11 @@ class NextToRule(BaseRule):
                 continue
 
             if self.next_to not in sectors[(index + 1) % 12] and self.next_to not in sectors[(index - 1) % 12]:
-                return f"{self.icon.name} is not next to {self.next_to.name}."
+                return f"{self.icon.to_string()} is not next to {self.next_to.to_string()}."
         return None
+
+    def description(self) -> str:
+        return f"{self.icon.to_string()} is always next to {self.next_to.to_string()}."
 
 
 @dataclass
@@ -61,8 +74,11 @@ class NotNextToRule(BaseRule):
                 continue
 
             if self.not_next_to in sectors[(index + 1) % 12] or self.not_next_to in sectors[(index - 1) % 12]:
-                return f"{self.icon.name} is next to {self.not_next_to.name}."
+                return f"{self.icon.to_string()} is next to {self.not_next_to.to_string()}."
         return None
+
+    def description(self) -> str:
+        return f"{self.icon.to_string()} is never next to {self.not_next_to.to_string()}."
 
 
 @dataclass
@@ -83,7 +99,10 @@ class CountInSectorsRule(BaseRule):
         if counter == self.count:
             return None
 
-        return f"Between sectors {self.start + 1} and {self.end + 1}, there are not {self.count} {self.icon.name}."
+        return f"Between sectors {self.start + 1} and {self.end + 1}, there are not {self.count} {self.icon.to_string()}."
+
+    def description(self) -> str:
+        return f"Between sectors {self.start + 1} and {self.end + 1}, there are {self.count} {self.icon.to_string()}."
 
 
 @dataclass
@@ -104,7 +123,10 @@ class BandOfSectorsRule(BaseRule):
                     break
             if not found_icon:
                 return None
-        return f"Not all {self.icon.name} are within {self.band} sectors."
+        return f"Not all {self.icon.to_string()} are within {self.band} sectors."
+
+    def description(self) -> str:
+        return f"All {self.icon.to_string()} are within a band of {self.band} sectors."
 
 
 @dataclass
@@ -120,8 +142,11 @@ class NotWithinNSectorsRule(BaseRule):
 
             for count in range(1, self.within):
                 if self.other_icon in sectors[(index + count) % 12]:
-                    return f"{self.icon.name} is within {self.within} sectors of {self.other_icon.name}."
+                    return f"{self.icon.to_string()} is within {self.within} sectors of {self.other_icon.to_string()}."
         return None
+
+    def description(self) -> str:
+        return f"{self.icon.to_string()} is never within {self.within} sectors of {self.other_icon.to_string()}."
 
 
 @dataclass
@@ -139,5 +164,30 @@ class WithinNSectorsRule(BaseRule):
                 if self.other_icon in sectors[(index + count) % 12]:
                     found_other_icon = True
             if not found_other_icon:
-                return f"{self.icon.name} is not within {self.within} sectors of {self.other_icon.name}."
+                return f"{self.icon.to_string()} is not within {self.within} sectors of {self.other_icon.to_string()}."
         return None
+
+    def description(self) -> str:
+        return f"{self.icon.to_string()} is always within {self.within} sectors of {self.other_icon.to_string()}."
+
+
+@dataclass
+class Conferences:
+    alpha: BaseRule
+    beta: BaseRule
+    gamma: BaseRule
+    delta: BaseRule
+    epsilon: BaseRule
+    roh: BaseRule
+    xi: BaseRule
+
+    def all(self) -> {str: BaseRule}:
+        return {
+            'Conference A': self.alpha,
+            'Conference B': self.beta,
+            'Conference C': self.gamma,
+            'Conference D': self.delta,
+            'Conference E': self.epsilon,
+            'Conference F': self.roh,
+            'Conference X': self.xi
+        }

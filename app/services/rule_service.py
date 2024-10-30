@@ -2,15 +2,15 @@ from random import shuffle, randrange, choice
 
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import BaseRule, NextToRule, NotNextToRule, BandOfSectorsRule, WithinNSectorsRule, \
-    NotInSectorRule
-from app.valueObjects.sectors import Sectors, Conferences
+    NotInSectorRule, Conferences
+from app.valueObjects.sectors import Sectors
 
 
-class GenerationService:
+class RuleService:
 
     def generate_start_rules(self, sectors: Sectors, count: int = 6) -> [BaseRule]:
         rules = []
-        while len(rules) <= count:
+        while len(rules) < count:
             rule = self.__generate_not_in_rule(sectors)
             if rule in rules:
                 continue
@@ -26,18 +26,18 @@ class GenerationService:
                 continue
 
             rules.append(rule)
-            x_rule = self.__random_rule(sectors, True)
+        x_rule = self.__random_rule(sectors, True)
 
-            shuffle(rules)
-            return Conferences(
-                alpha=rules[0],
-                beta=rules[1],
-                gamma=rules[2],
-                delta=rules[3],
-                epsilon=rules[4],
-                roh=rules[5],
-                xi=x_rule,
-            )
+        shuffle(rules)
+        return Conferences(
+            alpha=rules[0],
+            beta=rules[1],
+            gamma=rules[2],
+            delta=rules[3],
+            epsilon=rules[4],
+            roh=rules[5],
+            xi=x_rule,
+        )
 
     def __random_rule(self, sectors: Sectors, for_x: bool = False):
         rule = None
@@ -82,7 +82,7 @@ class GenerationService:
     def __generate_not_next_to_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
             for not_next_to in self.__shuffeled_icons():
-                if for_x and not_next_to == Luminary.PLANET:
+                if for_x and not_next_to == Luminary.DWARF_PLANET:
                     continue
                 rule = NotNextToRule(icon=icon, not_next_to=not_next_to)
                 if rule.valid(sectors) is None:

@@ -68,11 +68,11 @@ class GenerationService:
                     or board[(index - 1) % Sectors.COUNT] == Luminary.PLANET_X):
                 continue
             future_board = board.copy()
-            future_board[index] = Luminary.PLANET
+            future_board[index] = Luminary.DWARF_PLANET
             if len(future_board.get_single_sectors()) > 1:
                 continue
 
-            board[index] = Luminary.PLANET
+            board[index] = Luminary.DWARF_PLANET
             return board
         raise SectorGenerationException("No valid sector for the dwarf planet found: " + str(board))
 

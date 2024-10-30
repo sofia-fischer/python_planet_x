@@ -1,4 +1,4 @@
-from django.test import TestCase
+from unittest import TestCase
 from app.valueObjects.sectors import Sectors
 from app.valueObjects.luminary import Luminary
 
@@ -11,7 +11,7 @@ class TestBoard(TestCase):
             2: Luminary(0),
             3: Luminary(0),
             4: Luminary(0),
-            5: Luminary.PLANET,
+            5: Luminary.DWARF_PLANET,
             6: Luminary(0),
             7: Luminary(0),
             8: Luminary(0),

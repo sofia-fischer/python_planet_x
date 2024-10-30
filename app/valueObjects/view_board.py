@@ -2,7 +2,20 @@ from dataclasses import dataclass
 
 from app.services.board_service import GenerationService
 from app.valueObjects.luminary import Luminary
+from app.valueObjects.rules import BaseRule
 from app.valueObjects.sectors import Sectors
+
+
+@dataclass
+class ViewRule:
+    description: str
+    error: str | None
+    origin: str
+    visible: bool = True
+
+    @staticmethod
+    def create_from(rule: BaseRule, sectors: Sectors, origin: str = "Initial Rule", visible: bool = True) -> 'ViewRule':
+        return ViewRule(rule.description(), rule.valid(sectors), origin, visible)
 
 
 @dataclass
@@ -27,7 +40,7 @@ class ViewSector:
             visible_sky=index in visible_indices,
             index=index,
             moon=Luminary.MOON in sectors[index],
-            planet=Luminary.PLANET in sectors[index],
+            planet=Luminary.DWARF_PLANET in sectors[index],
             planet_x=Luminary.PLANET_X in sectors[index],
             asteroid=Luminary.ASTEROID in sectors[index],
             nebula=Luminary.NEBULA in sectors[index],

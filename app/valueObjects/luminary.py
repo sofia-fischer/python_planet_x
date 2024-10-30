@@ -1,3 +1,4 @@
+import string
 from enum import Flag, auto
 
 
@@ -7,9 +8,12 @@ class Luminary(Flag):
     ASTEROID = auto()  # 1
     MOON = auto()  # 2
     NEBULA = auto()  # 4
-    PLANET = auto()  # 8
+    DWARF_PLANET = auto()  # 8
     PLANET_X = auto()  # 16
     EMPTY_SPACE = auto()  # 32
+
+    def to_string(self) -> str:
+        return self.name.replace('_', ' ').capitalize()
 
     def appears_as_empty_space(self) -> bool:
         return Luminary.EMPTY_SPACE in self or Luminary.PLANET_X in self
@@ -19,7 +23,7 @@ class Luminary(Flag):
 
     @staticmethod
     def fill_with_all():
-        return Luminary.ASTEROID | Luminary.MOON | Luminary.NEBULA | Luminary.PLANET | Luminary.PLANET_X | Luminary.EMPTY_SPACE
+        return Luminary.ASTEROID | Luminary.MOON | Luminary.NEBULA | Luminary.DWARF_PLANET | Luminary.PLANET_X | Luminary.EMPTY_SPACE
 
     def __str__(self):
         return str(luminary.name if luminary else 'None' for luminary in Luminary if luminary in self)

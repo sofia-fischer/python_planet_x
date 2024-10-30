@@ -1,4 +1,4 @@
-<li class="mx-1 h-8">
+<li class="mr:1 md:mx-1 h-8">
     <input type="checkbox"
            id="sector_{{ index }}_{{ icon }}"
             {% if filled %}checked {% endif %}
@@ -12,7 +12,7 @@
             {% include "icons/moon-icon.html" %}
         {% elif icon == "NEBULA" %}
             {% include "icons/galaxy-icon.html" %}
-        {% elif icon == "PLANET" %}
+        {% elif icon == "DWARF_PLANET" %}
             {% include "icons/planet-icon.html" %}
         {% elif icon == "PLANET_X" %}
             {% include "icons/planet-x-icon.html" %}
