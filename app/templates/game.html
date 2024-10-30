@@ -4,6 +4,12 @@
 
     <div class="w-full flex flex-col items-center">
         <div class="bg-slate-800 my-6 p-3 text-white rounded text-center max-w-2xl">
+            <form action="/game/store" method="post" class="flex justify-evenly m-3">
+                <div class="text-teal-400">Game {{ game_id }}</div>
+                <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700" type="submit">
+                    Save
+                </button>
+            </form>
             The nightsky is a circle divided into 12 sectors, each sector contains exactly one celestial
             body (moon, asteroid, nebula, dwarf planet, empty space or planet x).
             All together there are 2 moons, 4 asteroids, 2 nebulas, 1 dwarf planet, 2 empty spaces and 1
@@ -17,6 +23,7 @@
         <form method="POST"
               style="background: linear-gradient({{ board.visible_degree }}deg, #0f766e 0%, rgb(51, 65, 85, 1) 40%);"
               class="m-1 md:px-3 rounded-3xl md:rounded-full md:p-2 max-w-2xl font-medium">
+            {% csrf_token %}
 
             <div class="flex justify-evenly w-full md:py-5 ">
                 <div class="md:px-1">

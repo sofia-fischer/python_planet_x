@@ -75,7 +75,7 @@ class RuleService:
             return None
         for icon in self.__shuffeled_icons():
             for next_to in self.__shuffeled_icons():
-                rule = NextToRule(icon=icon, next_to=next_to)
+                rule = NextToRule(icon=icon, other_icon=next_to)
                 if rule.valid(sectors) is None:
                     return rule
 
@@ -84,7 +84,7 @@ class RuleService:
             for not_next_to in self.__shuffeled_icons():
                 if for_x and not_next_to == Luminary.DWARF_PLANET:
                     continue
-                rule = NotNextToRule(icon=icon, not_next_to=not_next_to)
+                rule = NotNextToRule(icon=icon, other_icon=not_next_to)
                 if rule.valid(sectors) is None:
                     return rule
 
@@ -93,7 +93,7 @@ class RuleService:
             bands = [5, 4, 3]
             shuffle(bands)
             for band in bands:
-                rule = BandOfSectorsRule(icon=icon, band=band)
+                rule = BandOfSectorsRule(icon=icon, count=band)
                 if rule.valid(sectors) is None:
                     return rule
 
@@ -103,7 +103,7 @@ class RuleService:
             shuffle(withins)
             for within in withins:
                 for other_icon in self.__shuffeled_icons():
-                    rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, within=within)
+                    rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, count=within)
                     if rule.valid(sectors) is None:
                         return rule
 
@@ -113,6 +113,6 @@ class RuleService:
             shuffle(withins)
             for within in withins:
                 for other_icon in self.__shuffeled_icons():
-                    rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, within=within)
+                    rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, count=within)
                     if rule.valid(sectors) is not None:
                         return rule

@@ -27,3 +27,7 @@ class Luminary(Flag):
 
     def __str__(self):
         return str(luminary.name if luminary else 'None' for luminary in Luminary if luminary in self)
+
+    @staticmethod
+    def options() -> [string, int]:
+        return [(option.value, option.name) for option in list(Luminary)]

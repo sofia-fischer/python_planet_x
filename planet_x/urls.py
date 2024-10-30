@@ -22,7 +22,9 @@ from app.http import controller
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", controller.home, name="home"),
-    path("game/", controller.show, name="game_show"),
+    path("game/create", controller.create, name="game_create"),
+    path("game/search", controller.search, name="game_search"),
+    path("game/<str:game_id>", controller.show, name="game_show"),
 
     # Tailwind
     path("__reload__/", include("django_browser_reload.urls")),

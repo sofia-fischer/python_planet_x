@@ -1,6 +1,7 @@
-from app.services.board_service import GenerationService
-from django.shortcuts import render
+from django.urls import reverse
 
+from app.models import Game, Board
+from django.shortcuts import render, redirect
 from app.services.rule_service import RuleService
 from app.valueObjects.view_board import ViewBoard, ViewRule
 
@@ -9,16 +10,16 @@ def home(request):
     return render(request, 'home.html')
 
 
-def show(request):
-    service = GenerationService()
+def show(request, game_id: str):
+    game = Game.where_identifier(game_id)
     rule_service = RuleService()
-    sectors = service.generate()
+    sectors = game.get_sectors()
     start_rules = rule_service.generate_start_rules(sectors)
     conference_rules = rule_service.generate_conferences(sectors, start_rules)
-    view_board = ViewBoard.create_from(sectors, 0)
 
     return render(request, 'game.html', {
-        'board': view_board,
+        'game_id': game_id,
+        'board': ViewBoard.create_from(sectors, 0),
         'start_rules': [ViewRule.create_from(rule, sectors) for rule in start_rules],
         'conference_rules': [ViewRule.create_from(rule, sectors, origin, False)
                              for origin, rule in conference_rules.all().items()],
@@ -26,7 +27,16 @@ def show(request):
 
 
 def create(request):
-    return render(request, 'home.html')
+    game = Game.create_game()
+    Board.create_board(game)
+    return redirect('game_show', game.identifier)
+
+
+def search(request):
+    identifier = request.POST.get('game_id') or request.GET.get('game_id')
+    if not identifier:
+        return render(request, 'home.html', {'error': 'Cannot continue a game without an identifier'})
+    return redirect('game_show', identifier)
 
 
 def move(request):

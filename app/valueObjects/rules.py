@@ -48,37 +48,37 @@ class NotInSectorRule(BaseRule):
 @dataclass
 class NextToRule(BaseRule):
     icon: Luminary
-    next_to: Luminary
+    other_icon: Luminary
 
     def valid(self, sectors: Sectors) -> str | None:
         for index, luminary in sectors:
             if self.icon not in luminary:
                 continue
 
-            if self.next_to not in sectors[(index + 1) % 12] and self.next_to not in sectors[(index - 1) % 12]:
-                return f"{self.icon.to_string()} is not next to {self.next_to.to_string()}."
+            if self.other_icon not in sectors[(index + 1) % 12] and self.other_icon not in sectors[(index - 1) % 12]:
+                return f"{self.icon.to_string()} is not next to {self.other_icon.to_string()}."
         return None
 
     def description(self) -> str:
-        return f"{self.icon.to_string()} is always next to {self.next_to.to_string()}."
+        return f"{self.icon.to_string()} is always next to {self.other_icon.to_string()}."
 
 
 @dataclass
 class NotNextToRule(BaseRule):
     icon: Luminary
-    not_next_to: Luminary
+    other_icon: Luminary
 
     def valid(self, sectors: Sectors) -> str | None:
         for index, luminary in sectors:
             if self.icon not in luminary:
                 continue
 
-            if self.not_next_to in sectors[(index + 1) % 12] or self.not_next_to in sectors[(index - 1) % 12]:
-                return f"{self.icon.to_string()} is next to {self.not_next_to.to_string()}."
+            if self.other_icon in sectors[(index + 1) % 12] or self.other_icon in sectors[(index - 1) % 12]:
+                return f"{self.icon.to_string()} is next to {self.other_icon.to_string()}."
         return None
 
     def description(self) -> str:
-        return f"{self.icon.to_string()} is never next to {self.not_next_to.to_string()}."
+        return f"{self.icon.to_string()} is never next to {self.other_icon.to_string()}."
 
 
 @dataclass
@@ -108,12 +108,12 @@ class CountInSectorsRule(BaseRule):
 @dataclass
 class BandOfSectorsRule(BaseRule):
     icon: Luminary
-    band: int
+    count: int
 
     def valid(self, sectors: Sectors) -> str | None:
         # the board is valid if all icons are within n consecutive sectors.
         # therefor the board is valid, if there exists a band of 12-n sectors, which do not contain the icon.
-        out_of_band = 12 - self.band
+        out_of_band = 12 - self.count
 
         for index, luminary in sectors:
             found_icon = False
@@ -123,52 +123,52 @@ class BandOfSectorsRule(BaseRule):
                     break
             if not found_icon:
                 return None
-        return f"Not all {self.icon.to_string()} are within {self.band} sectors."
+        return f"Not all {self.icon.to_string()} are within {self.count} sectors."
 
     def description(self) -> str:
-        return f"All {self.icon.to_string()} are within a band of {self.band} sectors."
+        return f"All {self.icon.to_string()} are within a band of {self.count} sectors."
 
 
 @dataclass
 class NotWithinNSectorsRule(BaseRule):
     icon: Luminary
     other_icon: Luminary
-    within: int
+    count: int
 
     def valid(self, sectors: Sectors) -> str | None:
         for index, luminary in sectors:
             if self.icon not in luminary:
                 continue
 
-            for count in range(1, self.within):
+            for count in range(1, self.count):
                 if self.other_icon in sectors[(index + count) % 12]:
-                    return f"{self.icon.to_string()} is within {self.within} sectors of {self.other_icon.to_string()}."
+                    return f"{self.icon.to_string()} is within {self.count} sectors of {self.other_icon.to_string()}."
         return None
 
     def description(self) -> str:
-        return f"{self.icon.to_string()} is never within {self.within} sectors of {self.other_icon.to_string()}."
+        return f"{self.icon.to_string()} is never within {self.count} sectors of {self.other_icon.to_string()}."
 
 
 @dataclass
 class WithinNSectorsRule(BaseRule):
     icon: Luminary
     other_icon: Luminary
-    within: int
+    count: int
 
     def valid(self, sectors: Sectors) -> str | None:
         indices_with_icon = [index for index, luminary in sectors if self.icon in luminary]
 
         for index in indices_with_icon:
             found_other_icon = False
-            for count in [count % 12 for count in range(index, index + self.within)]:
+            for count in [count % 12 for count in range(index, index + self.count)]:
                 if self.other_icon in sectors[(index + count) % 12]:
                     found_other_icon = True
             if not found_other_icon:
-                return f"{self.icon.to_string()} is not within {self.within} sectors of {self.other_icon.to_string()}."
+                return f"{self.icon.to_string()} is not within {self.count} sectors of {self.other_icon.to_string()}."
         return None
 
     def description(self) -> str:
-        return f"{self.icon.to_string()} is always within {self.within} sectors of {self.other_icon.to_string()}."
+        return f"{self.icon.to_string()} is always within {self.count} sectors of {self.other_icon.to_string()}."
 
 
 @dataclass
