@@ -16,13 +16,16 @@ def show(request, game_id: str):
     sectors = game.get_sectors()
     start_rules = rule_service.generate_start_rules(sectors)
     conference_rules = rule_service.generate_conferences(sectors, start_rules)
+    board = ViewBoard.create_from(sectors, 0)
 
     return render(request, 'game.html', {
         'game_id': game_id,
-        'board': ViewBoard.create_from(sectors, 0),
+        'board': board,
+        'base_rules': [ViewRule.create_from(rule, sectors) for rule in rule_service.get_base_rules()],
         'start_rules': [ViewRule.create_from(rule, sectors) for rule in start_rules],
         'conference_rules': [ViewRule.create_from(rule, sectors, origin, False)
                              for origin, rule in conference_rules.all().items()],
+        'visibilities': board.get_sector_visibilities().items()
     })
 
 

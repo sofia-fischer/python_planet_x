@@ -57,6 +57,20 @@ class ViewBoard:
     icons: [str]
     timer: int
 
+    def get_time_percentage(self) -> int:
+        return min(int(1 / 16 * 100), 100)
+
+    def get_sector_visibilities(self) -> {int: bool}:
+        return {
+            0: True,
+            1: True,
+            2: True,
+            3: True,
+            4: True,
+            5: True,
+            6: True,
+        }
+
     @staticmethod
     def create_from(board: Sectors, timer: int) -> 'ViewBoard':
         visible_degree = ViewBoard.get_visible_degree(timer)

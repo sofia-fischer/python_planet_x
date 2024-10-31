@@ -8,6 +8,14 @@ from app.valueObjects.sectors import Sectors
 
 class RuleService:
 
+    @staticmethod
+    def get_base_rules() -> [BaseRule]:
+        return [
+            NextToRule(Luminary.ASTEROID, Luminary.ASTEROID),
+            NextToRule(Luminary.NEBULA, Luminary.EMPTY_SPACE),
+            NotNextToRule(Luminary.DWARF_PLANET, Luminary.PLANET_X),
+        ]
+
     def generate_start_rules(self, sectors: Sectors, count: int = 6) -> [BaseRule]:
         rules = []
         while len(rules) < count:

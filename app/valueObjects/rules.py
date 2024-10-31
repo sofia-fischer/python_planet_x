@@ -183,11 +183,11 @@ class Conferences:
 
     def all(self) -> {str: BaseRule}:
         return {
-            'Conference A': self.alpha,
-            'Conference B': self.beta,
-            'Conference C': self.gamma,
-            'Conference D': self.delta,
-            'Conference E': self.epsilon,
-            'Conference F': self.roh,
-            'Conference X': self.xi
+            'A': self.alpha,
+            'B': self.beta,
+            'C': self.gamma,
+            'D': self.delta,
+            'E': self.epsilon,
+            'F': self.roh,
+            'X': self.xi
         }
