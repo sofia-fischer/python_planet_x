@@ -1,11 +1,9 @@
-from django.urls import reverse
-
 from app.models import Game, Board
 from django.shortcuts import render, redirect
-
-from app.services.board_service import GenerationService
 from app.services.rule_service import RuleService
-from app.valueObjects.view_board import ViewBoard, ViewRule
+from app.valueObjects.luminary import Luminary
+from app.valueObjects.rules import InSectorRule
+from app.valueObjects.view_board import ViewBoard, ViewRule, ViewSector
 
 
 def home(request):
@@ -21,7 +19,6 @@ def show(request, game_id: str):
         'board': board,
         'base_rules': [ViewRule.create_from(rule, game.get_sectors(), 'Base Rule') for rule in base_rules],
         'rules': [ViewRule.create_from(rule.get_rule(), game.get_sectors(), rule.origin) for rule in game.get_rules()],
-        'visibilities': board.get_sector_visibilities().items()
     })
 
 
@@ -47,6 +44,17 @@ def conference(request, game_id: str):
     rule = RuleService().generate_conference_rule(game.get_sectors(), game.get_rules())
     game.add_rule(rule, 'Conference')
     game.add_time(1)
+    return redirect('game_show', game_id)
+
+
+def target(request, game_id: str):
+    game = Game.where_identifier(game_id)
+    index = int(request.POST.get('target'))
+    actual = game.get_sectors()[index]
+    if Luminary.PLANET_X in actual:
+        actual = Luminary.EMPTY_SPACE
+    game.add_rule(InSectorRule(actual, index), 'Target')
+    game.add_time(4)
     return redirect('game_show', game_id)
 
 

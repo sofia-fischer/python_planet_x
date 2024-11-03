@@ -113,17 +113,18 @@
         </form>
 
         {# Rules #}
-        <div class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full">
-            <ul class="max-w-64 text-center m-2 w-full flex flex-wrap justify-evenly">
-                <div>Base Rules</div>
+        <div class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full h-fit">
+            <ul class="text-center m-1 w-full flex flex-wrap flex-col justify-evenly md:max-h-80">
                 {% for rule in base_rules %}
-                    <li class="bg-slate-700 p-2 rounded w-full m-2">{{ rule.description }}</li>
+                    <li class="md:max-w-xs bg-slate-700 rounded w-full flex m-1 justify-between">
+                        <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
+                        <div class="p-2">{{ rule.description }}</div>
+                    </li>
                 {% endfor %}
-                <div>Known Rules</div>
                 {% for rule in rules %}
-                    <li class="bg-slate-700 rounded w-full flex m-2">
-                        <div class="text-slate-500 p-2">{{ rule.origin }}</div>
-                        <div class="p-2 w-full">{{ rule.description }}</div>
+                    <li class="md:max-w-xs bg-slate-700 rounded w-full flex m-1 justify-between">
+                        <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
+                        <div class="p-2">{{ rule.description }}</div>
                     </li>
                 {% endfor %}
             </ul>
@@ -133,21 +134,32 @@
         <div class="fixed z-10 overflow-y-auto top-0 w-full h-full left-0 flex hidden items-center justify-center text-left text-white"
              id="modal">
             <div class="inset-0 transition-opacity max-w-full">
-                <div class="absolute inset-0 bg-gray-900 opacity-85 h-full" onclick="toggleModal()"/>
+                <div class="absolute inset-0 bg-slate-900 opacity-85 h-full" onclick="toggleModal()"/>
             </div>
             <div class="transform sm:my-8 sm:max-w-2xl w-full max-w-full" role="dialog" aria-modal="true"
                  aria-labelledby="modal-headline">
 
-                <form action="game/{{ game_id }}/target" method="POST" class="my-2 bg-slate-600 rounded p-2">
+                <div class="my-2 bg-slate-900 rounded p-2">
+                    <div class="my-2">
+                        Each action you take will reveal information about the nightsky, but will cost you time (⏳).
+
+                        There is only a fraction of the nightsky visible to you to perform any action on. As time passes
+                        the nightsky will rotate and reveal more sectors to you, and hide others. The visible sectors
+                        are marked with a border.
+                    </div>
+                </div>
+
+                <form action="/game/{{ game_id }}/target" method="POST" class="my-2 bg-slate-600 rounded p-2">
                     {% csrf_token %}
                     <div class="flex flex-wrap">
                         <label for="target" class="min-w-fit pt-1">Target Sector</label>
                         <select id="target"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none" name="target">
-                            {% for index, visible in visibilities %}
-                                <option  {% if not visible %} disabled {% endif %} value="{{ index }}">
-                                    {{ index | add:1 }}
+                            {% for sector in board.sectors %}
+                                <option  {% if not sector.visible_sky %} disabled {% endif %}
+                                                                         value="{{ sector.index }}">
+                                    {{ sector.index | add:1 }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -156,7 +168,7 @@
                         </button>
                     </div>
                     <div class="text-xs my-2">
-                        Target a sector to know what's in there. Planet X will appear empty.
+                        Target a sector to know what's in there. Planet X will appear as Empty Space.
                         This Action will take 4 ⏳
                     </div>
                 </form>
@@ -164,7 +176,7 @@
                 <form action="/game/{{ game_id }}/conference" method="POST" class="my-2 bg-slate-600 rounded p-2">
                     {% csrf_token %}
                     <div class="flex flex-wrap">
-                        <label for="target" class="min-w-fit pt-1">Go to Conference </label>
+                        <label class="min-w-fit pt-1">Go to Conference </label>
                         <button type="submit" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
                             Go to Conference
                         </button>
@@ -174,11 +186,11 @@
                     </div>
                 </form>
 
-                <form action="game/{{ game_id }}/survey" method="POST" class="my-2 bg-slate-600 rounded p-2">
+                <form action="/game/{{ game_id }}/survey" method="POST" class="my-2 bg-slate-600 rounded p-2">
                     {% csrf_token %}
                     <div class="flex flex-wrap">
-                        <label for="icon" class="min-w-fit pt-1">Survey for</label>
-                        <select id="icon"
+                        <label for="survery_icon" class="min-w-fit pt-1">Survey for</label>
+                        <select id="survery_icon"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none">
                             <option value="MOON"> Moon</option>
@@ -188,23 +200,25 @@
                             <option value="EMPTY_SPACE"> Empty Space</option>
                         </select>
 
-                        <label for="from" class="min-w-fit pt-1"> in sectors</label>
-                        <select id="from"
+                        <label for="survery_start" class="min-w-fit pt-1"> in sectors</label>
+                        <select id="survery_start"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 name="from" style="appearance: none;">
-                            {% for index, visible in visibilities %}
-                                <option  {% if not visible %} disabled {% endif %} value="{{ index }}">
-                                    {{ index | add:1 }}
+                            {% for sector in board.sectors %}
+                                <option  {% if not sector.visible_sky %} disabled {% endif %}
+                                                                         value="{{ sector.index }}">
+                                    {{ sector.index | add:1 }}
                                 </option>
                             {% endfor %}
                         </select>
-                        <label for="to" class="min-w-fit pt-1">to</label>
-                        <select id="to"
+                        <label for="survery_end" class="min-w-fit pt-1">to</label>
+                        <select id="survery_end"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none;">
-                            {% for index, visible in visibilities %}
-                                <option  {% if not visible %} disabled {% endif %} value="{{ index }}">
-                                    {{ index | add:1 }}
+                            {% for sector in board.sectors %}
+                                <option  {% if not sector.visible_sky %} disabled {% endif %}
+                                                                         value="{{ sector.index }}">
+                                    {{ sector.index | add:1 }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -217,7 +231,7 @@
                     <div class="text-xs my-2">
                         Select a range of Sectors to get to know the number of one object type withing.
                         This Action will take 3 ⏳ for 3 or less sectors, 4 ⏳ for 4 or more sectors.
-                        Planet X will appera as Empty Space
+                        Planet X will appear as Empty Space
                     </div>
                 </form>
 

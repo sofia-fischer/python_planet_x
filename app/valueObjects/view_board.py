@@ -51,36 +51,15 @@ class ViewSector:
 
 @dataclass
 class ViewBoard:
-    left_board: [ViewSector]
-    right_board: [ViewSector]
-    visible_degree: int
-    icons: [str]
+    sectors: [ViewSector]
     timer: int
-
-    def get_time_percentage(self) -> int:
-        return min(int(self.timer / 16 * 100), 100)
-
-    def get_sector_visibilities(self) -> {int: bool}:
-        return {
-            0: True,
-            1: True,
-            2: True,
-            3: True,
-            4: True,
-            5: True,
-            6: True,
-        }
 
     @staticmethod
     def create_from(board: Sectors, timer: int) -> 'ViewBoard':
-        visible_degree = ViewBoard.get_visible_degree(timer)
-        left_board = [ViewSector.create_from(board, index, timer) for index in range(0, Sectors.COUNT // 2)]
-        right_board = reversed(
-            [ViewSector.create_from(board, index, timer) for index in range(Sectors.COUNT // 2, Sectors.COUNT)])
-        return ViewBoard(left_board, right_board, visible_degree, [luminary.name for luminary in Luminary], timer)
+        sectors = [ViewSector.create_from(board, index, timer) for index in range(0, 12)]
+        return ViewBoard(sectors, timer)
 
-    @staticmethod
-    def get_visible_degree(timer: int) -> int:
+    def visible_degree(self) -> int:
         degrees = {
             0: 90,
             1: 40,
@@ -95,5 +74,13 @@ class ViewBoard:
             10: 160,
             11: 150
         }
+        return degrees[self.timer % Sectors.COUNT]
 
-        return degrees[timer % Sectors.COUNT]
+    def get_time_percentage(self) -> int:
+        return min(int(self.timer / 16 * 100), 100)
+
+    def left_board(self) -> [ViewSector]:
+        return [sector for sector in self.sectors if sector.index < Sectors.COUNT // 2]
+
+    def right_board(self) -> [ViewSector]:
+        return reversed([sector for sector in self.sectors if sector.index >= Sectors.COUNT // 2])
