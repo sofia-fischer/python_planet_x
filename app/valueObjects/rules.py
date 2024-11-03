@@ -171,25 +171,3 @@ class WithinNSectorsRule(BaseRule):
 
     def description(self) -> str:
         return f"{self.icon.to_string()} is always within {self.count} sectors of {self.other_icon.to_string()}."
-
-
-@dataclass
-class Conferences:
-    alpha: BaseRule
-    beta: BaseRule
-    gamma: BaseRule
-    delta: BaseRule
-    epsilon: BaseRule
-    roh: BaseRule
-    xi: BaseRule
-
-    def all(self) -> {str: BaseRule}:
-        return {
-            'A': self.alpha,
-            'B': self.beta,
-            'C': self.gamma,
-            'D': self.delta,
-            'E': self.epsilon,
-            'F': self.roh,
-            'X': self.xi
-        }

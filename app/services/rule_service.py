@@ -2,7 +2,7 @@ from random import shuffle, randrange, choice
 
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import BaseRule, NextToRule, NotNextToRule, BandOfSectorsRule, WithinNSectorsRule, \
-    NotInSectorRule, Conferences
+    NotInSectorRule, InSectorRule, CountInSectorsRule
 from app.valueObjects.sectors import Sectors
 
 
@@ -101,3 +101,24 @@ class RuleService:
                     rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, count=within)
                     if rule.valid(sectors) is not None:
                         return rule
+
+    @staticmethod
+    def get_valid_in_sector_rule(sectors: Sectors, index: int) -> InSectorRule | None:
+        if Luminary.PLANET_X in sectors[index]:
+            return InSectorRule(Luminary.EMPTY_SPACE, index)
+        return InSectorRule(sectors[index], index)
+
+    @staticmethod
+    def get_valid_count_in_sector_rule(
+            sectors: Sectors,
+            icon: Luminary,
+            start: int,
+            end: int,
+    ) -> CountInSectorsRule | None:
+        absolut_end = end if end >= start else end + 12
+        steps = absolut_end - start
+        counter = 0
+        for count in range(0, steps):
+            if icon in sectors[(start + count) % 12]:
+                counter += 1
+        return CountInSectorsRule(icon, start, end, counter)

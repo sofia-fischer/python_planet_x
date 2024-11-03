@@ -83,4 +83,4 @@ class ViewBoard:
         return [sector for sector in self.sectors if sector.index < Sectors.COUNT // 2]
 
     def right_board(self) -> [ViewSector]:
-        return reversed([sector for sector in self.sectors if sector.index >= Sectors.COUNT // 2])
+        return list(reversed([sector for sector in self.sectors if sector.index >= Sectors.COUNT // 2]))

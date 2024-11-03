@@ -41,20 +41,41 @@ def search(request):
 
 def conference(request, game_id: str):
     game = Game.where_identifier(game_id)
-    rule = RuleService().generate_conference_rule(game.get_sectors(), game.get_rules())
-    game.add_rule(rule, 'Conference')
+    game.add_rule(RuleService().generate_conference_rule(game.get_sectors(), game.get_rules()), 'Conference')
     game.add_time(1)
     return redirect('game_show', game_id)
 
 
 def target(request, game_id: str):
     game = Game.where_identifier(game_id)
-    index = int(request.POST.get('target'))
-    actual = game.get_sectors()[index]
-    if Luminary.PLANET_X in actual:
-        actual = Luminary.EMPTY_SPACE
-    game.add_rule(InSectorRule(actual, index), 'Target')
+    game.add_rule(RuleService.get_valid_in_sector_rule(game.get_sectors(), int(request.POST.get('target'))), 'Target')
     game.add_time(4)
+    return redirect('game_show', game_id)
+
+
+def survey(request, game_id: str):
+    game = Game.where_identifier(game_id)
+    start = int(request.POST.get('survey_start'))
+    end = int(request.POST.get('survey_end'))
+
+    match request.POST.get('survey_icon'):
+        case Luminary.MOON.name:
+            icon = Luminary.MOON
+        case Luminary.DWARF_PLANET.name:
+            icon = Luminary.DWARF_PLANET
+        case Luminary.ASTEROID.name:
+            icon = Luminary.ASTEROID
+        case Luminary.NEBULA.name:
+            icon = Luminary.NEBULA
+        case _:
+            icon = Luminary.EMPTY_SPACE
+
+    if Luminary.PLANET_X in icon:
+        icon = Luminary.EMPTY_SPACE
+
+    game.add_rule(RuleService.get_valid_count_in_sector_rule(game.get_sectors(), icon, start, end), 'Survey')
+    absolut_end = end if end >= start else end + 12
+    game.add_time(3 if absolut_end - start <= 3 else 4)
     return redirect('game_show', game_id)
 
 
