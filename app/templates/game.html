@@ -113,29 +113,17 @@
         </form>
 
         {# Rules #}
-        <div class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full flex flex-wrap justify-evenly">
-            <ul class="max-w-64 text-center m-2 w-full">
+        <div class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full">
+            <ul class="max-w-64 text-center m-2 w-full flex flex-wrap justify-evenly">
                 <div>Base Rules</div>
                 {% for rule in base_rules %}
                     <li class="bg-slate-700 p-2 rounded w-full m-2">{{ rule.description }}</li>
                 {% endfor %}
-                <div>Initial Rules to start with</div>
-                {% for rule in start_rules %}
-                    <li class="bg-slate-700 p-2 rounded w-full m-2">{{ rule.description }}</li>
-                {% endfor %}
-            </ul>
-            <ul class="max-w-64 text-center m-2 w-full">
-                <div>Conferences</div>
-                {% for rule in conference_rules %}
+                <div>Known Rules</div>
+                {% for rule in rules %}
                     <li class="bg-slate-700 rounded w-full flex m-2">
                         <div class="text-slate-500 p-2">{{ rule.origin }}</div>
-                        <div class="p-2 w-full">
-                            {% if rule.visible %}
-                                {{ rule.description }}
-                            {% else %}
-                                ???
-                            {% endif %}
-                        </div>
+                        <div class="p-2 w-full">{{ rule.description }}</div>
                     </li>
                 {% endfor %}
             </ul>
@@ -173,21 +161,10 @@
                     </div>
                 </form>
 
-                <form action="game/{{ game_id }}/conference" method="POST" class="my-2 bg-slate-600 rounded p-2">
+                <form action="/game/{{ game_id }}/conference" method="POST" class="my-2 bg-slate-600 rounded p-2">
                     {% csrf_token %}
                     <div class="flex flex-wrap">
                         <label for="target" class="min-w-fit pt-1">Go to Conference </label>
-                        <select id="target"
-                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
-                                style="appearance: none" name="target">
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
-                            <option value="F">F</option>
-                        </select>
-
                         <button type="submit" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
                             Go to Conference
                         </button>

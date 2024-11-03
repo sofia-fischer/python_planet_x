@@ -58,7 +58,7 @@ class ViewBoard:
     timer: int
 
     def get_time_percentage(self) -> int:
-        return min(int(1 / 16 * 100), 100)
+        return min(int(self.timer / 16 * 100), 100)
 
     def get_sector_visibilities(self) -> {int: bool}:
         return {

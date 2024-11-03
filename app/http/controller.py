@@ -2,6 +2,8 @@ from django.urls import reverse
 
 from app.models import Game, Board
 from django.shortcuts import render, redirect
+
+from app.services.board_service import GenerationService
 from app.services.rule_service import RuleService
 from app.valueObjects.view_board import ViewBoard, ViewRule
 
@@ -12,19 +14,13 @@ def home(request):
 
 def show(request, game_id: str):
     game = Game.where_identifier(game_id)
-    rule_service = RuleService()
-    sectors = game.get_sectors()
-    start_rules = rule_service.generate_start_rules(sectors)
-    conference_rules = rule_service.generate_conferences(sectors, start_rules)
-    board = ViewBoard.create_from(sectors, 0)
-
+    board = ViewBoard.create_from(game.get_sectors(), game.timeCount)
+    base_rules = RuleService().get_base_rules()
     return render(request, 'game.html', {
         'game_id': game_id,
         'board': board,
-        'base_rules': [ViewRule.create_from(rule, sectors) for rule in rule_service.get_base_rules()],
-        'start_rules': [ViewRule.create_from(rule, sectors) for rule in start_rules],
-        'conference_rules': [ViewRule.create_from(rule, sectors, origin, False)
-                             for origin, rule in conference_rules.all().items()],
+        'base_rules': [ViewRule.create_from(rule, game.get_sectors(), 'Base Rule') for rule in base_rules],
+        'rules': [ViewRule.create_from(rule.get_rule(), game.get_sectors(), rule.origin) for rule in game.get_rules()],
         'visibilities': board.get_sector_visibilities().items()
     })
 
@@ -32,6 +28,10 @@ def show(request, game_id: str):
 def create(request):
     game = Game.create_game()
     Board.create_board(game)
+    rules = []
+    for index in range(0, 5):
+        rules.append(RuleService().generate_start_rule(game.get_sectors(), rules))
+    [game.add_rule(rule, 'Initial') for rule in rules]
     return redirect('game_show', game.identifier)
 
 
@@ -42,8 +42,12 @@ def search(request):
     return redirect('game_show', identifier)
 
 
-def move(request):
-    return render(request, 'home.html')
+def conference(request, game_id: str):
+    game = Game.where_identifier(game_id)
+    rule = RuleService().generate_conference_rule(game.get_sectors(), game.get_rules())
+    game.add_rule(rule, 'Conference')
+    game.add_time(1)
+    return redirect('game_show', game_id)
 
 
 def delete(request):

@@ -6,6 +6,8 @@ from django.db import models
 
 from app.services.board_service import GenerationService
 from app.valueObjects.luminary import Luminary
+from app.valueObjects.rules import BaseRule, NextToRule, NotNextToRule, BandOfSectorsRule, NotWithinNSectorsRule, \
+    InSectorRule, NotInSectorRule, WithinNSectorsRule, CountInSectorsRule
 from app.valueObjects.sectors import Sectors
 
 
@@ -28,6 +30,11 @@ class Game(models.Model):
     notice10 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
     notice11 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
     notice12 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
+
+    def add_time(self, time: int) -> int:
+        self.timeCount += time
+        self.save()
+        return self.timeCount
 
     def get_notes(self) -> Sectors:
         return Sectors().fill({
@@ -92,6 +99,9 @@ class Game(models.Model):
             11: Luminary(board.sector12),
         })
 
+    def get_rules(self) -> ['Rule']:
+        return Rule.objects.filter(game=self)
+
     @staticmethod
     def where_identifier(identifier: str) -> 'Game':
         return Game.objects.get(identifier=identifier)
@@ -102,6 +112,9 @@ class Game(models.Model):
         game = Game.objects.create(identifier=identifier)
         game.save()
         return game
+
+    def add_rule(self, rule: BaseRule, origin: str,) -> 'Rule':
+        return Rule.create(self, origin, rule)
 
 
 class Board(models.Model):
@@ -143,21 +156,53 @@ class Board(models.Model):
         board.save()
         return board
 
-#
-# class Rule(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-#     type = models.CharField(max_length=50)
-#     origin = models.CharField(max_length=50)
-#     icon = models.PositiveSmallIntegerField(choices=Luminary.options())
-#     other_icon = models.PositiveSmallIntegerField(choices=Luminary.options(), null=True)
-#     sector = models.PositiveSmallIntegerField(max_length=12, null=True)
-#     start = models.PositiveSmallIntegerField(max_length=12, null=True)
-#     end = models.PositiveSmallIntegerField(max_length=12, null=True)
-#     count = models.PositiveSmallIntegerField(max_length=12, null=True)
-#
+
+class Rule(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    type = models.CharField(max_length=50)
+    origin = models.CharField(max_length=50)
+    icon = models.PositiveSmallIntegerField(choices=Luminary.options())
+    other_icon = models.PositiveSmallIntegerField(choices=Luminary.options(), null=True)
+    sector = models.PositiveSmallIntegerField(null=True)
+    start = models.PositiveSmallIntegerField(null=True)
+    end = models.PositiveSmallIntegerField(null=True)
+    count = models.PositiveSmallIntegerField(null=True)
+
+    @staticmethod
+    def create(game: Game, origin: str, rule: BaseRule) -> 'Rule':
+        return Rule.objects.create(
+            game=game,
+            type=rule.__class__.__name__,
+            origin=origin,
+            icon=rule.icon.value,
+            other_icon= rule.other_icon.value if hasattr(rule, 'other_icon') else None,
+            sector=rule.sector if hasattr(rule, 'sector') else None,
+            start=rule.start if hasattr(rule, 'start') else None,
+            end=rule.end if hasattr(rule, 'end') else None,
+            count=rule.count if hasattr(rule, 'count') else None
+        )
+
+    def get_rule(self) -> BaseRule:
+        if self.type == 'InSectorRule':
+            return InSectorRule(icon=Luminary(self.icon), sector=self.sector)
+        if self.type == 'NotInSectorRule':
+            return NotInSectorRule(icon=Luminary(self.icon), sector=self.sector)
+        if self.type == 'NextToRule':
+            return NextToRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon))
+        if self.type == 'NotNextToRule':
+            return NotNextToRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon))
+        if self.type == 'CountInSectorsRule':
+            return CountInSectorsRule(icon=Luminary(self.icon), start=self.start, end=self.end, count=self.count)
+        if self.type == 'BandOfSectorsRule':
+            return BandOfSectorsRule(icon=Luminary(self.icon), count=self.count)
+        if self.type == 'WithinNSectorsRule':
+            return WithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
+        if self.type == 'NotWithinNSectorsRule':
+            return NotWithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
+
 # class Theory(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 #     created_at = models.DateTimeField(auto_now_add=True)

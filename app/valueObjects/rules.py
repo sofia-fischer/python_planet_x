@@ -6,6 +6,8 @@ from app.valueObjects.sectors import Sectors
 
 @dataclass
 class BaseRule(ABC):
+    icon: Luminary
+
     @abstractmethod
     def valid(self, sectors: Sectors) -> str | None:
         pass

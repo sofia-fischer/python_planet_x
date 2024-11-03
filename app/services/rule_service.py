@@ -16,59 +16,36 @@ class RuleService:
             NotNextToRule(Luminary.DWARF_PLANET, Luminary.PLANET_X),
         ]
 
-    def generate_start_rules(self, sectors: Sectors, count: int = 6) -> [BaseRule]:
-        rules = []
-        while len(rules) < count:
+    def generate_start_rule(self, sectors: Sectors, existing_rules: [BaseRule]) -> NotInSectorRule:
+        while True:
             rule = self.__generate_not_in_rule(sectors)
-            if rule in rules:
-                continue
-            rules.append(rule)
-        return rules
+            if rule not in existing_rules:
+                return rule
 
-    def generate_conferences(self, sectors: Sectors, start_rules: [BaseRule]) -> Conferences:
-        rules = []
-
-        while len(rules) <= 5:
-            rule = self.__random_rule(sectors)
-            if rule in rules or rule in start_rules:
-                continue
-
-            rules.append(rule)
-        x_rule = self.__random_rule(sectors, True)
-
-        shuffle(rules)
-        return Conferences(
-            alpha=rules[0],
-            beta=rules[1],
-            gamma=rules[2],
-            delta=rules[3],
-            epsilon=rules[4],
-            roh=rules[5],
-            xi=x_rule,
-        )
-
-    def __random_rule(self, sectors: Sectors, for_x: bool = False):
+    def generate_conference_rule(self, sectors: Sectors, existing_rules: [BaseRule]) -> BaseRule:
         rule = None
         while rule is None:
             match (randrange(0, 5)):
                 case 0:
-                    rule = self.__generate_next_to_rule(sectors, for_x)
+                    rule = self.__generate_next_to_rule(sectors)
                 case 1:
-                    rule = self.__generate_not_next_to_rule(sectors, for_x)
+                    rule = self.__generate_not_next_to_rule(sectors)
                 case 2:
-                    rule = self.__generate_in_band_rule(sectors, for_x)
+                    rule = self.__generate_in_band_rule(sectors)
                 case 3:
-                    rule = self.__generate_within_sectors_rule(sectors, for_x)
+                    rule = self.__generate_within_sectors_rule(sectors)
                 case _:
-                    rule = self.__generate_not_within_sectors_rule(sectors, for_x)
+                    rule = self.__generate_not_within_sectors_rule(sectors)
+            if rule in existing_rules:
+                rule = None
         return rule
 
-    def __shuffeled_icons(self):
+    def __shuffeled_icons(self) -> [Luminary]:
         icons = list(set(Luminary) - {Luminary.PLANET_X})
         shuffle(icons)
         return icons
 
-    def __generate_not_in_rule(self, sectors: Sectors) -> BaseRule | None:
+    def __generate_not_in_rule(self, sectors: Sectors) -> NotInSectorRule | None:
         indices = list(range(0, 12))
         shuffle(indices)
         for index in indices:
@@ -78,7 +55,7 @@ class RuleService:
             icons = list(set(Luminary) - {Luminary.PLANET_X, luminary})
             return NotInSectorRule(icon=choice(icons), sector=index)
 
-    def __generate_next_to_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
+    def __generate_next_to_rule(self, sectors: Sectors, for_x: bool = False) -> NextToRule | None:
         if for_x:
             return None
         for icon in self.__shuffeled_icons():
@@ -87,7 +64,7 @@ class RuleService:
                 if rule.valid(sectors) is None:
                     return rule
 
-    def __generate_not_next_to_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
+    def __generate_not_next_to_rule(self, sectors: Sectors, for_x: bool = False) -> NotNextToRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
             for not_next_to in self.__shuffeled_icons():
                 if for_x and not_next_to == Luminary.DWARF_PLANET:
@@ -96,7 +73,7 @@ class RuleService:
                 if rule.valid(sectors) is None:
                     return rule
 
-    def __generate_in_band_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
+    def __generate_in_band_rule(self, sectors: Sectors, for_x: bool = False) -> BandOfSectorsRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
             bands = [5, 4, 3]
             shuffle(bands)
@@ -105,7 +82,7 @@ class RuleService:
                 if rule.valid(sectors) is None:
                     return rule
 
-    def __generate_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
+    def __generate_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> WithinNSectorsRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
             withins = [6, 5, 4, 3]
             shuffle(withins)
@@ -115,7 +92,7 @@ class RuleService:
                     if rule.valid(sectors) is None:
                         return rule
 
-    def __generate_not_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> BaseRule | None:
+    def __generate_not_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> WithinNSectorsRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
             withins = [6, 5, 4, 3]
             shuffle(withins)
