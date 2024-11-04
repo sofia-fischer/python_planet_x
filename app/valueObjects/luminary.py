@@ -28,6 +28,38 @@ class Luminary(Flag):
             case _:
                 return 'None'
 
+    def score(self) -> int:
+        match self:
+            case Luminary.ASTEROID:
+                return 3
+            case Luminary.MOON:
+                return 2
+            case Luminary.NEBULA:
+                return 4
+            case Luminary.DWARF_PLANET:
+                return 4
+            case Luminary.PLANET_X:
+                return 10
+            case _:
+                return 0
+
+    def identifier(self) -> str:
+        match self:
+            case Luminary.ASTEROID:
+                return 'ASTEROID'
+            case Luminary.MOON:
+                return 'MOON'
+            case Luminary.NEBULA:
+                return 'NEBULA'
+            case Luminary.DWARF_PLANET:
+                return 'DWARF_PLANET'
+            case Luminary.PLANET_X:
+                return 'PLANET_X'
+            case Luminary.EMPTY_SPACE:
+                return 'EMPTY_SPACE'
+            case _:
+                return 'NONE'
+
     def appears_as_empty_space(self) -> bool:
         return Luminary.EMPTY_SPACE in self or Luminary.PLANET_X in self
 

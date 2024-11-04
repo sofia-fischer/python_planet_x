@@ -58,7 +58,7 @@ class RuleService:
         return icons
 
     def __generate_not_in_rule(self, sectors: Sectors) -> NotInSectorRule | None:
-        indices = list(range(0, 12))
+        indices = list(range(0, sectors.COUNT))
         shuffle(indices)
         for index in indices:
             luminary = sectors[index]
@@ -130,10 +130,10 @@ class RuleService:
 
     @staticmethod
     def get_valid_count_in_sector_rule(sectors: Sectors, icon: Luminary, start: int, end: int) -> CountInSectorsRule:
-        absolut_end = end if end >= start else end + 12
+        absolut_end = end if end >= start else end + sectors.COUNT
         steps = absolut_end - start
         counter = 0
         for count in range(0, steps):
-            if icon in sectors[(start + count) % 12]:
+            if icon in sectors[(start + count) % sectors.COUNT]:
                 counter += 1
         return CountInSectorsRule(icon, start, end, counter)

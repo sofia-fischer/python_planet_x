@@ -96,6 +96,9 @@ class Game(models.Model):
     def get_rules(self) -> list['Rule']:
         return Rule.objects.filter(game=self)
 
+    def get_theories(self) -> list['Theory']:
+        return Theory.objects.filter(game=self)
+
     @staticmethod
     def where_identifier(identifier: str) -> 'Game':
         return Game.objects.get(identifier=identifier)
@@ -109,6 +112,17 @@ class Game(models.Model):
 
     def add_rule(self, rule: BaseRule, origin: str,) -> 'Rule':
         return Rule.create(self, origin, rule)
+
+    def add_theory(self, icon: Luminary, sector: int) -> 'Theory':
+        actual_icon = self.get_sectors()[sector]
+        return Theory.objects.create(
+            game=self,
+            time_count_created=self.time_count,
+            luminary=icon.value,
+            sector=sector,
+            time_count_reviewed=self.time_count + 6,
+            score=icon.score() if icon in actual_icon else 0
+        )
 
 
 class Board(models.Model):
@@ -198,18 +212,20 @@ class Rule(models.Model):
             return NotWithinNSectorsRule(Luminary(self.icon), Luminary(self.other_icon), self.count)
         raise ValueError(f"Unknown rule type: {self.type}")
 
-# class Theory(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-#     timeCount = models.PositiveSmallIntegerField()
-#     luminary = models.PositiveSmallIntegerField(choices=Luminary.options())
-#     sector = models.PositiveSmallIntegerField()
-#     reviewed_at = models.DateTimeField(null=True)
-#     score = models.PositiveSmallIntegerField(null=True)
-#
-#
+class Theory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    time_count_created = models.PositiveSmallIntegerField()
+    luminary = models.PositiveSmallIntegerField(choices=Luminary.options())
+    sector = models.PositiveSmallIntegerField()
+    time_count_reviewed = models.PositiveSmallIntegerField()
+    score = models.PositiveSmallIntegerField(null=True)
+
+    def get_luminary(self) -> Luminary:
+        return Luminary(self.luminary)
+
 # class Move(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 #     created_at = models.DateTimeField(auto_now_add=True)

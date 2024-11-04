@@ -58,7 +58,8 @@ class NextToRule(BaseRule):
             if self.icon not in luminary:
                 continue
 
-            if self.other_icon not in sectors[(index + 1) % 12] and self.other_icon not in sectors[(index - 1) % 12]:
+            if (self.other_icon not in sectors[(index + 1) % sectors.COUNT]
+                    and self.other_icon not in sectors[(index - 1) % sectors.COUNT]):
                 return f"{self.icon.to_string()} is not next to {self.other_icon.to_string()}."
         return None
 
@@ -76,7 +77,8 @@ class NotNextToRule(BaseRule):
             if self.icon not in luminary:
                 continue
 
-            if self.other_icon in sectors[(index + 1) % 12] or self.other_icon in sectors[(index - 1) % 12]:
+            if (self.other_icon in sectors[(index + 1) % sectors.COUNT]
+                    or self.other_icon in sectors[(index - 1) % sectors.COUNT]):
                 return f"{self.icon.to_string()} is next to {self.other_icon.to_string()}."
         return None
 
@@ -92,10 +94,10 @@ class CountInSectorsRule(BaseRule):
     count: int
 
     def valid(self, sectors: Sectors) -> str | None:
-        absolut_end = self.end if self.end >= self.start else self.end + 12
+        absolut_end = self.end if self.end >= self.start else self.end + sectors.COUNT
         counter = 0
-        for index in [index % 12 for index in range(0, absolut_end - self.start + 1)]:
-            if self.icon in sectors[(self.start + index) % 12]:
+        for index in [index % sectors.COUNT for index in range(0, absolut_end - self.start + 1)]:
+            if self.icon in sectors[(self.start + index) % sectors.COUNT]:
                 counter += 1
 
         if counter == self.count:
@@ -116,12 +118,12 @@ class BandOfSectorsRule(BaseRule):
     def valid(self, sectors: Sectors) -> str | None:
         # the board is valid if all icons are within n consecutive sectors.
         # therefor the board is valid, if there exists a band of 12-n sectors, which do not contain the icon.
-        out_of_band = 12 - self.count
+        out_of_band = sectors.COUNT - self.count
 
         for index, _ in sectors:
             found_icon = False
             for count in range(0, out_of_band):
-                if self.icon in sectors[(index + count) % 12]:
+                if self.icon in sectors[(index + count) % sectors.COUNT]:
                     found_icon = True
                     break
             if not found_icon:
@@ -144,7 +146,7 @@ class NotWithinNSectorsRule(BaseRule):
                 continue
 
             for count in range(1, self.count):
-                if self.other_icon in sectors[(index + count) % 12]:
+                if self.other_icon in sectors[(index + count) % sectors.COUNT]:
                     return f"{self.icon.to_string()} is within {self.count} sectors of {self.other_icon.to_string()}."
         return None
 
@@ -163,8 +165,8 @@ class WithinNSectorsRule(BaseRule):
 
         for index in indices_with_icon:
             found_other_icon = False
-            for count in [count % 12 for count in range(index, index + self.count)]:
-                if self.other_icon in sectors[(index + count) % 12]:
+            for count in [count % sectors.COUNT for count in range(index, index + self.count)]:
+                if self.other_icon in sectors[(index + count) % sectors.COUNT]:
                     found_other_icon = True
             if not found_other_icon:
                 return f"{self.icon.to_string()} is not within {self.count} sectors of {self.other_icon.to_string()}."

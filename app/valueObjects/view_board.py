@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from app.models import Theory
 from app.services.board_service import GenerationService
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import BaseRule
@@ -9,13 +10,25 @@ from app.valueObjects.sectors import Sectors
 @dataclass
 class ViewRule:
     description: str
-    error: str | None
     origin: str
-    visible: bool = True
 
     @staticmethod
-    def create_from(rule: BaseRule, sectors: Sectors, origin: str = "Initial Rule", visible: bool = True) -> 'ViewRule':
-        return ViewRule(rule.description(), rule.valid(sectors), origin, visible)
+    def create_from(rule: BaseRule, origin: str = "Initial Rule") -> 'ViewRule':
+        return ViewRule(rule.description(), origin)
+
+    @staticmethod
+    def create_from_theory(theory: Theory, time_count: int) -> 'ViewRule':
+        if time_count < theory.time_count_reviewed:
+            description = f"In sector {theory.sector + 1} should be {theory.get_luminary().to_string()}"
+            origin = f"Theory ({theory.time_count_created}), in review ({theory.time_count_reviewed})"
+            return ViewRule(description, origin)
+        if theory.score == 0:
+            description = f"In sector {theory.sector + 1} is no {theory.get_luminary().to_string()}"
+            origin = f"Theory ({theory.time_count_created}), reviewed FALSE ({theory.time_count_reviewed})"
+            return ViewRule(description, origin)
+        description = f"In sector {theory.sector + 1} is {theory.get_luminary().to_string()}"
+        origin = f"Theory ({theory.time_count_created}), reviewed CORRECT ({theory.time_count_reviewed})"
+        return ViewRule(description, origin)
 
 
 @dataclass
@@ -56,7 +69,7 @@ class ViewBoard:
 
     @staticmethod
     def create_from(board: Sectors, timer: int) -> 'ViewBoard':
-        sectors = [ViewSector.create_from(board, index, timer) for index in range(0, 12)]
+        sectors = [ViewSector.create_from(board, index, timer) for index in range(0, Sectors.COUNT)]
         return ViewBoard(sectors, timer)
 
     def visible_degree(self) -> int:
@@ -77,7 +90,7 @@ class ViewBoard:
         return degrees[self.timer % Sectors.COUNT]
 
     def get_time_percentage(self) -> int:
-        return min(int(self.timer / 16 * 100), 100)
+        return min(int(self.timer / 20 * 100), 100)
 
     def left_board(self) -> list[ViewSector]:
         return [sector for sector in self.sectors if sector.index < Sectors.COUNT // 2]

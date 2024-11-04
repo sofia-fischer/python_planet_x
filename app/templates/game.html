@@ -47,6 +47,10 @@
                         <div>14</div>
                         <div>15</div>
                         <div>16</div>
+                        <div>17</div>
+                        <div>18</div>
+                        <div>19</div>
+                        <div>20</div>
                     </div>
                     <div title="Making an Action will take time. The time you have spend is displayed here."
                          class="bg-teal-700 text-xs p-1 rounded-full"
@@ -116,12 +120,6 @@
 
         {# Rules #}
         <ul class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full flex flex-wrap justify-evenly">
-            {% for rule in base_rules %}
-                <li class="md:w-1/2 w-full bg-slate-700 rounded flex justify-between box-border border-slate-800 border-4">
-                    <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
-                    <div class="p-2">{{ rule.description }}</div>
-                </li>
-            {% endfor %}
             {% for rule in rules %}
                 <li class="md:w-1/2 w-full bg-slate-700 rounded flex justify-between box-border border-slate-800 border-4">
                     <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
@@ -189,7 +187,7 @@
                     </div>
                 </div>
 
-                <div method="POST" class="my-2 bg-slate-600 rounded p-2">
+                <div class="my-2 bg-slate-600 rounded p-2">
                     <div class="flex flex-wrap">
                         <label for="survey_icon" class="min-w-fit pt-1">Survey for</label>
                         <select id="survey_icon" name="survey_icon" form="nightsky"
@@ -238,6 +236,42 @@
                         more sectors.
                         <br>
                         Planet X will appear as Empty Space
+                    </div>
+                </div>
+
+                <div class="my-2 bg-slate-600 rounded p-2">
+                    <div class="flex flex-wrap">
+                        <label for="theory_icon" class="min-w-fit pt-1">Public the Theory that in Sector</label>
+                        <select id="theory_sector" name="theory_sector" form="nightsky"
+                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
+                                style="appearance: none;">
+                            {% for sector in board.sectors %}
+                                <option value="{{ sector.index }}"> {{ sector.index | add:1 }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="theory_icon " class="min-w-fit pt-1">is</label>
+                        <select id="theory_icon" name="theory_icon" form="nightsky"
+                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
+                                style="appearance: none">
+                            <option value="MOON"> Moon</option>
+                            <option value="ASTEROID"> Asteroid</option>
+                            <option value="DWARF_PLANET"> Dwarf Planet</option>
+                            <option value="NEBULA"> Nebula</option>
+                        </select>
+
+                        <button formaction="/game/{{ game_id }}/theory" type="submit" form="nightsky"
+                                class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
+                            Publish Theory
+                        </button>
+                    </div>
+
+                    <div class="text-xs my-2">
+                        The Theory will be reviewd for 6 ⏳ and then it will be revealed if it is correct or not.
+                        You will receive additional score points if it was correct: 2 for Moon, 3 for Asteroid, 4 for
+                        Dwarf Planet, and 4 for Nebula.
+                        <br>
+                        This Action will take 0 ⏳, but it can only happen instantly after crossing a theory time (📝).
                     </div>
                 </div>
 

@@ -29,6 +29,7 @@ urlpatterns = [
     path("game/<str:game_id>/conference", controller.conference, name="game_conference"),
     path("game/<str:game_id>/target", controller.target, name="game_target"),
     path("game/<str:game_id>/survey", controller.survey, name="game_survey"),
+    path("game/<str:game_id>/theory", controller.theory, name="game_theory"),
 
     # Tailwind
     path("__reload__/", include("django_browser_reload.urls")),
