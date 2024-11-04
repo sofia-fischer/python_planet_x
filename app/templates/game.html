@@ -3,20 +3,19 @@
 {% block content %}
 
     <div class="w-full flex flex-col items-center">
-        {# Rules #}
+        {# Information #}
         <div class="bg-slate-800 my-6 p-3 text-white rounded text-center max-w-2xl">
             <div class="flex justify-evenly m-3">
                 <div class="text-teal-400">Game <span class="font-bold">{{ game_id }}</span></div>
-                <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700"
+                <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700 box-border "
                         onclick="toggleModal()">
                     Action
                 </button>
-                <form action="/game/{{ game_id }}/save" method="POST" id="nightsky">
-                    {% csrf_token %}
-                    <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700" type="submit">
-                        Save
-                    </button>
-                </form>
+                <button formaction="/game/{{ game_id }}/save" form="nightsky"
+                        class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700 box-border"
+                        type="submit">
+                    Save
+                </button>
             </div>
             The nightsky is a circle divided into 12 sectors, each sector contains exactly one celestial
             body (moon, asteroid, nebula, dwarf planet, empty space or planet x).
@@ -59,7 +58,7 @@
         {# Theories #}
 
         {# Nightsky #}
-        <form method="POST"
+        <form method="POST" id="nightsky"
               style="background: linear-gradient({{ board.visible_degree }}deg, #0f766e 0%, rgb(51, 65, 85, 1) 40%);"
               class="m-1 md:px-3 rounded-3xl md:rounded-full md:p-2 max-w-2xl font-medium">
             {% csrf_token %}
@@ -116,22 +115,20 @@
         </form>
 
         {# Rules #}
-        <div class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full h-fit">
-            <ul class="text-center m-1 w-full flex flex-wrap flex-col justify-evenly md:max-h-80">
-                {% for rule in base_rules %}
-                    <li class="md:max-w-xs bg-slate-700 rounded w-full flex m-1 justify-between">
-                        <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
-                        <div class="p-2">{{ rule.description }}</div>
-                    </li>
-                {% endfor %}
-                {% for rule in rules %}
-                    <li class="md:max-w-xs bg-slate-700 rounded w-full flex m-1 justify-between">
-                        <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
-                        <div class="p-2">{{ rule.description }}</div>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+        <ul class="bg-slate-800 m-3 rounded text-white text-xs max-w-2xl w-full flex flex-wrap justify-evenly">
+            {% for rule in base_rules %}
+                <li class="md:w-1/2 w-full bg-slate-700 rounded flex justify-between box-border border-slate-800 border-4">
+                    <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
+                    <div class="p-2">{{ rule.description }}</div>
+                </li>
+            {% endfor %}
+            {% for rule in rules %}
+                <li class="md:w-1/2 w-full bg-slate-700 rounded flex justify-between box-border border-slate-800 border-4">
+                    <div class="text-slate-500 pl-2 py-2">{{ rule.origin }}</div>
+                    <div class="p-2">{{ rule.description }}</div>
+                </li>
+            {% endfor %}
+        </ul>
 
         {# Actions #}
         <div class="fixed z-10 overflow-y-auto top-0 w-full h-full left-0 flex hidden items-center justify-center text-left text-white"
@@ -152,11 +149,10 @@
                     </div>
                 </div>
 
-                <form action="/game/{{ game_id }}/target" method="POST" class="my-2 bg-slate-600 rounded p-2">
-                    {% csrf_token %}
+                <div class="my-2 bg-slate-600 rounded p-2">
                     <div class="flex flex-wrap">
                         <label for="target" class="min-w-fit pt-1">Target Sector</label>
-                        <select id="target"
+                        <select id="target" form="nightsky"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none" name="target">
                             {% for sector in board.sectors %}
@@ -166,7 +162,8 @@
                                 </option>
                             {% endfor %}
                         </select>
-                        <button type="submit" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
+                        <button formaction="/game/{{ game_id }}/target" type="submit" form="nightsky"
+                                class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
                             Target
                         </button>
                     </div>
@@ -177,26 +174,25 @@
                         <br>
                         Planet X will appear as Empty Space.
                     </div>
-                </form>
+                </div>
 
-                <form action="/game/{{ game_id }}/conference" method="POST" class="my-2 bg-slate-600 rounded p-2">
-                    {% csrf_token %}
+                <div class="my-2 bg-slate-600 rounded p-2">
                     <div class="flex flex-wrap">
                         <label class="min-w-fit pt-1">Go to Conference </label>
-                        <button type="submit" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
+                        <button formaction="/game/{{ game_id }}/conference" type="submit" form="nightsky"
+                                class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
                             Go to Conference
                         </button>
                     </div>
                     <div class="text-xs my-2">
                         Receive a new rule. This Action will take 1 ⏳, but can not be done twice in a row.
                     </div>
-                </form>
+                </div>
 
-                <form action="/game/{{ game_id }}/survey" method="POST" class="my-2 bg-slate-600 rounded p-2">
-                    {% csrf_token %}
+                <div method="POST" class="my-2 bg-slate-600 rounded p-2">
                     <div class="flex flex-wrap">
                         <label for="survey_icon" class="min-w-fit pt-1">Survey for</label>
-                        <select id="survey_icon" name="survey_icon"
+                        <select id="survey_icon" name="survey_icon" form="nightsky"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none">
                             <option value="MOON"> Moon</option>
@@ -207,7 +203,7 @@
                         </select>
 
                         <label for="survey_start" class="min-w-fit pt-1"> in sectors</label>
-                        <select id="survey_start" name="survey_start"
+                        <select id="survey_start" name="survey_start" form="nightsky"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 name="from" style="appearance: none;">
                             {% for sector in board.sectors %}
@@ -218,7 +214,7 @@
                             {% endfor %}
                         </select>
                         <label for="survey_end" class="min-w-fit pt-1">to</label>
-                        <select id="survey_end" name="survey_end"
+                        <select id="survey_end" name="survey_end" form="nightsky"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none;">
                             {% for sector in board.sectors %}
@@ -229,7 +225,8 @@
                             {% endfor %}
                         </select>
 
-                        <button type="submit" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
+                        <button formaction="/game/{{ game_id }}/survey" type="submit" form="nightsky"
+                                class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
                             Survey
                         </button>
                     </div>
@@ -242,7 +239,7 @@
                         <br>
                         Planet X will appear as Empty Space
                     </div>
-                </form>
+                </div>
 
                 <div class="flex justify-end">
                     <button onclick="toggleModal()" class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500">

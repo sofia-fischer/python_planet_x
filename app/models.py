@@ -58,6 +58,7 @@ class Game(models.Model):
         self.notice10 = sectors[9].value
         self.notice11 = sectors[10].value
         self.notice12 = sectors[11].value
+        self.save()
 
     def get_notes(self) -> Sectors:
         return Sectors().fill({
