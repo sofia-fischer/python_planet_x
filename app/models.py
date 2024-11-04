@@ -1,13 +1,22 @@
+import uuid
 from random import choices
 from string import ascii_uppercase, digits
-import uuid
 
 from django.db import models
 
 from app.services.board_service import GenerationService
 from app.valueObjects.luminary import Luminary
-from app.valueObjects.rules import BaseRule, NextToRule, NotNextToRule, BandOfSectorsRule, NotWithinNSectorsRule, \
-    InSectorRule, NotInSectorRule, WithinNSectorsRule, CountInSectorsRule
+from app.valueObjects.rules import (
+    BandOfSectorsRule,
+    BaseRule,
+    CountInSectorsRule,
+    InSectorRule,
+    NextToRule,
+    NotInSectorRule,
+    NotNextToRule,
+    NotWithinNSectorsRule,
+    WithinNSectorsRule,
+)
 from app.valueObjects.sectors import Sectors
 
 
@@ -35,22 +44,6 @@ class Game(models.Model):
         self.timeCount += time
         self.save()
         return self.timeCount
-
-    def get_notes(self) -> Sectors:
-        return Sectors().fill({
-            0: Luminary(self.notice1),
-            1: Luminary(self.notice2),
-            2: Luminary(self.notice3),
-            3: Luminary(self.notice4),
-            4: Luminary(self.notice5),
-            5: Luminary(self.notice6),
-            6: Luminary(self.notice7),
-            7: Luminary(self.notice8),
-            8: Luminary(self.notice9),
-            9: Luminary(self.notice10),
-            10: Luminary(self.notice11),
-            11: Luminary(self.notice12),
-        })
 
     def set_notes(self, sectors: Sectors) -> None:
         self.notice1 = sectors[0].value
@@ -99,7 +92,7 @@ class Game(models.Model):
             11: Luminary(board.sector12),
         })
 
-    def get_rules(self) -> ['Rule']:
+    def get_rules(self) -> list['Rule']:
         return Rule.objects.filter(game=self)
 
     @staticmethod
@@ -202,6 +195,7 @@ class Rule(models.Model):
             return WithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
         if self.type == 'NotWithinNSectorsRule':
             return NotWithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
+        raise ValueError(f"Unknown rule type: {self.type}")
 
 # class Theory(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

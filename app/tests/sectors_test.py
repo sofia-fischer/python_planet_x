@@ -1,6 +1,7 @@
 from unittest import TestCase
-from app.valueObjects.sectors import Sectors
+
 from app.valueObjects.luminary import Luminary
+from app.valueObjects.sectors import Sectors
 
 
 class TestBoard(TestCase):
@@ -20,4 +21,4 @@ class TestBoard(TestCase):
             11: Luminary(0),
         })
 
-        assert board.has_band_of_three_unfilled_sectors()
+        self.assertTrue(board.has_band_of_three_unfilled_sectors())

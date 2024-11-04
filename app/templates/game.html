@@ -11,9 +11,12 @@
                         onclick="toggleModal()">
                     Action
                 </button>
-                <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700" type="submit">
-                    Save
-                </button>
+                <form action="/game/{{ game_id }}/save" method="POST" id="nightsky">
+                    {% csrf_token %}
+                    <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700" type="submit">
+                        Save
+                    </button>
+                </form>
             </div>
             The nightsky is a circle divided into 12 sectors, each sector contains exactly one celestial
             body (moon, asteroid, nebula, dwarf planet, empty space or planet x).

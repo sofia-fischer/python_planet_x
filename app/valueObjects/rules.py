@@ -1,5 +1,6 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.sectors import Sectors
 
@@ -26,7 +27,7 @@ class InSectorRule(BaseRule):
         if self.icon in sectors[self.sector]:
             return None
 
-        return f"{self.icon.to_string()} is not in sector {self.sector + 1}."
+        return f"In sector {self.sector + 1} is no {self.icon.to_string()}."
 
     def description(self) -> str:
         return f"In sector {self.sector + 1} is {self.icon.to_string()}."
@@ -41,7 +42,7 @@ class NotInSectorRule(BaseRule):
         if self.icon not in sectors[self.sector]:
             return None
 
-        return f"{self.icon.to_string()} is in sector {self.sector + 1}."
+        return f"In sector {self.sector + 1} is {self.icon.to_string()}."
 
     def description(self) -> str:
         return f"In sector {self.sector + 1} is no {self.icon.to_string()}."
@@ -70,7 +71,7 @@ class NotNextToRule(BaseRule):
     icon: Luminary
     other_icon: Luminary
 
-    def valid(self, sectors: Sectors) -> str | None:
+    def  valid(self, sectors: Sectors) -> str | None:
         for index, luminary in sectors:
             if self.icon not in luminary:
                 continue
@@ -92,19 +93,19 @@ class CountInSectorsRule(BaseRule):
 
     def valid(self, sectors: Sectors) -> str | None:
         absolut_end = self.end if self.end >= self.start else self.end + 12
-
         counter = 0
-        for index in [index % 12 for index in range(self.start, absolut_end)]:
-            if self.icon in sectors[index]:
+        for index in [index % 12 for index in range(0, absolut_end - self.start + 1)]:
+            if self.icon in sectors[(self.start + index) % 12]:
                 counter += 1
 
         if counter == self.count:
             return None
 
-        return f"Between sectors {self.start + 1} and {self.end + 1}, there are not {self.count} {self.icon.to_string()}."
+        return (f"There are {counter} {self.icon.to_string()} within sector {self.start + 1} to {self.end + 1},"
+                f" but there should be {self.count}.")
 
     def description(self) -> str:
-        return f"Between sectors {self.start + 1} and {self.end + 1}, there are {self.count} {self.icon.to_string()}."
+        return f"There are {self.count} {self.icon.to_string()} within sector {self.start + 1} to {self.end + 1}."
 
 
 @dataclass
@@ -117,7 +118,7 @@ class BandOfSectorsRule(BaseRule):
         # therefor the board is valid, if there exists a band of 12-n sectors, which do not contain the icon.
         out_of_band = 12 - self.count
 
-        for index, luminary in sectors:
+        for index, _ in sectors:
             found_icon = False
             for count in range(0, out_of_band):
                 if self.icon in sectors[(index + count) % 12]:

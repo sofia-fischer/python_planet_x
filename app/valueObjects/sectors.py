@@ -61,7 +61,7 @@ class Sectors:
         return list(self.sectors.values())
 
     def __str__(self) -> str:
-        return str({sector: str(luminary) for sector, luminary in self.sectors})
+        return str(self.sectors)
 
     def __iter__(self):
         return iter(self.sectors.items())

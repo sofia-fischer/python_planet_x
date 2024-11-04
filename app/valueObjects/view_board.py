@@ -51,7 +51,7 @@ class ViewSector:
 
 @dataclass
 class ViewBoard:
-    sectors: [ViewSector]
+    sectors: list[ViewSector]
     timer: int
 
     @staticmethod
@@ -79,8 +79,8 @@ class ViewBoard:
     def get_time_percentage(self) -> int:
         return min(int(self.timer / 16 * 100), 100)
 
-    def left_board(self) -> [ViewSector]:
+    def left_board(self) -> list[ViewSector]:
         return [sector for sector in self.sectors if sector.index < Sectors.COUNT // 2]
 
-    def right_board(self) -> [ViewSector]:
+    def right_board(self) -> list[ViewSector]:
         return list(reversed([sector for sector in self.sectors if sector.index >= Sectors.COUNT // 2]))

@@ -10,13 +10,13 @@ class TestRuleService(TestCase):
         sectors = GenerationService().generate()
         rule = RuleService().generate_start_rule(sectors, [])
 
-        assert rule is not None
-        assert rule.valid(sectors) is None
-        assert isinstance(rule, NotInSectorRule)
+        self.assertIsNotNone(rule)
+        self.assertIsNone(rule.valid(sectors))
+        self.assertIsInstance(rule, NotInSectorRule)
 
     def test_rule_generate_conference_rule(self) -> None:
         sectors = GenerationService().generate()
         rule = RuleService().generate_conference_rule(sectors, [])
 
-        assert rule is not None
-        assert rule.valid(sectors) is None
+        self.assertIsNotNone(rule)
+        self.assertIsNone(rule.valid(sectors))

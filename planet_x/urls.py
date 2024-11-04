@@ -25,6 +25,7 @@ urlpatterns = [
     path("game/create", controller.create, name="game_create"),
     path("game/search", controller.search, name="game_search"),
     path("game/<str:game_id>", controller.show, name="game_show"),
+    path("game/<str:game_id>/save", controller.save, name="game_save"),
     path("game/<str:game_id>/conference", controller.conference, name="game_conference"),
     path("game/<str:game_id>/target", controller.target, name="game_target"),
     path("game/<str:game_id>/survey", controller.survey, name="game_survey"),

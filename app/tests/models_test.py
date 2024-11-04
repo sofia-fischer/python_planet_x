@@ -1,31 +1,32 @@
 from django.test import TestCase
-from app.models import Game, Board
+
+from app.models import Board, Game
 
 
 class ModelsTest(TestCase):
     def test_crud_game(self) -> None:
         game = Game.create_game()
-        assert game.identifier is not None
+        self.assertIsNotNone(game.identifier)
         game.save()
-        foundGame = Game.where_identifier(game.identifier)
-        assert game.identifier == foundGame.identifier
-        assert game.id == foundGame.id
-        foundGame.delete()
+        found_game = Game.where_identifier(game.identifier)
+        self.assertEqual(game.identifier, found_game.identifier)
+        self.assertEqual(game.id, found_game.id)
+        found_game.delete()
         try:
             Game.where_identifier(game.identifier)
-            assert False
+            raise AssertionError("Game was not deleted")
         except Game.DoesNotExist:
-            assert True
+            self.assertTrue(True)
 
     def test_crud_board(self) -> None:
         game = Game.create_game()
         game.save()
         board = Board.create_board(game)
-        assert game.get_sectors() is not None
-        assert board.game.id == game.id
+        self.assertIsNotNone(game.get_sectors())
+        self.assertEqual(board.game.id, game.id)
         game.delete()
         try:
             Board.objects.get(id=board.id)
-            assert False
+            raise AssertionError("Board was not deleted")
         except Board.DoesNotExist:
-            assert True
+            self.assertTrue(True)
