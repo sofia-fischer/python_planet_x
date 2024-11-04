@@ -1,4 +1,5 @@
-from random import randrange, choice
+from random import choice, randrange
+
 from app.Exceptions.board_exception import SectorGenerationException
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.sectors import Sectors
@@ -95,13 +96,13 @@ class GenerationService:
                 board[board.get_single_sectors()[0]] = Luminary.EMPTY_SPACE
                 return board
 
-            for possibleEmptySpace in board.get_empty_sectors_shuffled():
+            for possible_empty_space in board.get_empty_sectors_shuffled():
                 future_board = board.copy()
-                future_board[possibleEmptySpace] = Luminary.EMPTY_SPACE
+                future_board[possible_empty_space] = Luminary.EMPTY_SPACE
                 if len(future_board.get_single_sectors()) > 0:
                     continue
 
-                board[possibleEmptySpace] = Luminary.EMPTY_SPACE
+                board[possible_empty_space] = Luminary.EMPTY_SPACE
                 return board
         raise SectorGenerationException("No valid sector for the nebula found: " + str(board))
 

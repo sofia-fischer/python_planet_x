@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('identifier', models.CharField(max_length=20)),
-                ('timeCount', models.PositiveSmallIntegerField(default=0)),
+                ('time_count', models.PositiveSmallIntegerField(default=0)),
                 ('score', models.PositiveSmallIntegerField(default=0)),
                 ('notice1', models.PositiveSmallIntegerField(default=63)),
                 ('notice2', models.PositiveSmallIntegerField(default=63)),

@@ -25,7 +25,7 @@ class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     identifier = models.CharField(max_length=20)
-    timeCount = models.PositiveSmallIntegerField(default=0)
+    time_count = models.PositiveSmallIntegerField(default=0)
     score = models.PositiveSmallIntegerField(default=0)
     notice1 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
     notice2 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
@@ -41,9 +41,9 @@ class Game(models.Model):
     notice12 = models.PositiveSmallIntegerField(default=Luminary.fill_with_all().value)
 
     def add_time(self, time: int) -> int:
-        self.timeCount += time
+        self.time_count += time
         self.save()
-        return self.timeCount
+        return self.time_count
 
     def set_notes(self, sectors: Sectors) -> None:
         self.notice1 = sectors[0].value
@@ -180,21 +180,21 @@ class Rule(models.Model):
 
     def get_rule(self) -> BaseRule:
         if self.type == 'InSectorRule':
-            return InSectorRule(icon=Luminary(self.icon), sector=self.sector)
+            return InSectorRule(Luminary(self.icon), self.sector)
         if self.type == 'NotInSectorRule':
-            return NotInSectorRule(icon=Luminary(self.icon), sector=self.sector)
+            return NotInSectorRule(Luminary(self.icon), self.sector)
         if self.type == 'NextToRule':
-            return NextToRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon))
+            return NextToRule(Luminary(self.icon), Luminary(self.other_icon))
         if self.type == 'NotNextToRule':
-            return NotNextToRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon))
+            return NotNextToRule(Luminary(self.icon), Luminary(self.other_icon))
         if self.type == 'CountInSectorsRule':
-            return CountInSectorsRule(icon=Luminary(self.icon), start=self.start, end=self.end, count=self.count)
+            return CountInSectorsRule(Luminary(self.icon), self.start, self.end, self.count)
         if self.type == 'BandOfSectorsRule':
-            return BandOfSectorsRule(icon=Luminary(self.icon), count=self.count)
+            return BandOfSectorsRule(Luminary(self.icon), self.count)
         if self.type == 'WithinNSectorsRule':
-            return WithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
+            return WithinNSectorsRule(Luminary(self.icon), Luminary(self.other_icon), self.count)
         if self.type == 'NotWithinNSectorsRule':
-            return NotWithinNSectorsRule(icon=Luminary(self.icon), other_icon=Luminary(self.other_icon), count=self.count)
+            return NotWithinNSectorsRule(Luminary(self.icon), Luminary(self.other_icon), self.count)
         raise ValueError(f"Unknown rule type: {self.type}")
 
 # class Theory(models.Model):

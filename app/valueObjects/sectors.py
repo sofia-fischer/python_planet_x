@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from random import shuffle
 
 from app.Exceptions.board_exception import BoardValidationException

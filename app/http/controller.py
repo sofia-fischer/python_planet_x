@@ -15,7 +15,7 @@ def show(request, game_id: str):
     game = Game.where_identifier(game_id)
     return render(request, 'game.html', {
         'game_id': game_id,
-        'board': ViewBoard.create_from(game.get_notes(), game.timeCount),
+        'board': ViewBoard.create_from(game.get_notes(), game.time_count),
         'base_rules': [ViewRule.create_from(rule, game.get_sectors(), 'Base Rule')
                        for rule in RuleService().get_base_rules()],
         'rules': [ViewRule.create_from(rule.get_rule(), game.get_sectors(), rule.origin) for rule in game.get_rules()],

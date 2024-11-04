@@ -36,7 +36,12 @@ class Luminary(Flag):
 
     @staticmethod
     def fill_with_all() -> 'Luminary':
-        return Luminary.ASTEROID | Luminary.MOON | Luminary.NEBULA | Luminary.DWARF_PLANET | Luminary.PLANET_X | Luminary.EMPTY_SPACE
+        return (Luminary.ASTEROID
+                | Luminary.MOON
+                | Luminary.NEBULA
+                | Luminary.DWARF_PLANET
+                | Luminary.PLANET_X
+                | Luminary.EMPTY_SPACE)
 
     def __str__(self):
         return str(luminary.to_string() for luminary in Luminary if luminary in self)

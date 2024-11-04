@@ -1,4 +1,5 @@
 from enum import Flag
+
 from django.template.defaulttags import register
 
 

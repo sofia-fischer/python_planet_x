@@ -10,6 +10,7 @@ from app.valueObjects.rules import (
     NextToRule,
     NotInSectorRule,
     NotNextToRule,
+    NotWithinNSectorsRule,
     WithinNSectorsRule,
 )
 from app.valueObjects.sectors import Sectors
@@ -47,7 +48,7 @@ class RuleService:
                     rule = self.__generate_within_sectors_rule(sectors)
                 case _:
                     rule = self.__generate_not_within_sectors_rule(sectors)
-            if rule in existing_rules:
+            if rule in existing_rules or rule in self.get_base_rules():
                 rule = None
         return rule
 
@@ -110,13 +111,13 @@ class RuleService:
                         return rule
         return None
 
-    def __generate_not_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> WithinNSectorsRule | None:
+    def __generate_not_within_sectors_rule(self, sectors: Sectors, for_x: bool = False) -> NotWithinNSectorsRule | None:
         for icon in (self.__shuffeled_icons() if not for_x else [Luminary.PLANET_X]):
-            withins = [6, 5, 4, 3]
+            withins = [5, 4, 3, 2]
             shuffle(withins)
             for within in withins:
                 for other_icon in self.__shuffeled_icons():
-                    rule = WithinNSectorsRule(icon=icon, other_icon=other_icon, count=within)
+                    rule = NotWithinNSectorsRule(icon=icon, other_icon=other_icon, count=within)
                     if rule.valid(sectors) is not None:
                         return rule
         return None
