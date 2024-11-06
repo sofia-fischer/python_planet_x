@@ -4,7 +4,6 @@ from string import ascii_uppercase, digits
 
 from django.db import models
 
-from app.services.board_service import GenerationService
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import (
     BandOfSectorsRule,
@@ -15,6 +14,7 @@ from app.valueObjects.rules import (
     NotInSectorRule,
     NotNextToRule,
     NotWithinNSectorsRule,
+    PlanetXLocationRule,
     WithinNSectorsRule,
 )
 from app.valueObjects.sectors import Sectors
@@ -110,21 +110,6 @@ class Game(models.Model):
         game.save()
         return game
 
-    def add_rule(self, rule: BaseRule, origin: str,) -> 'Rule':
-        return Rule.create(self, origin, rule)
-
-    def add_theory(self, icon: Luminary, sector: int) -> 'Theory':
-        actual_icon = self.get_sectors()[sector]
-        return Theory.objects.create(
-            game=self,
-            time_count_created=self.time_count,
-            luminary=icon.value,
-            sector=sector,
-            time_count_reviewed=self.time_count + 6,
-            score=icon.score() if icon in actual_icon else 0
-        )
-
-
 class Board(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -144,8 +129,7 @@ class Board(models.Model):
     sector12 = models.PositiveSmallIntegerField(choices=Luminary.options())
 
     @staticmethod
-    def create_board(game: Game) -> 'Board':
-        sectors = GenerationService().generate()
+    def create_board(game: Game, sectors: Sectors) -> 'Board':
         board = Board.objects.create(
             game=game,
             sector1=sectors[0].value,
@@ -210,6 +194,8 @@ class Rule(models.Model):
             return WithinNSectorsRule(Luminary(self.icon), Luminary(self.other_icon), self.count)
         if self.type == 'NotWithinNSectorsRule':
             return NotWithinNSectorsRule(Luminary(self.icon), Luminary(self.other_icon), self.count)
+        if self.type == 'PlanetXLocationRule':
+            return PlanetXLocationRule(Luminary(self.icon), self.sector, Luminary(self.other_icon))
         raise ValueError(f"Unknown rule type: {self.type}")
 
 class Theory(models.Model):
@@ -225,6 +211,18 @@ class Theory(models.Model):
 
     def get_luminary(self) -> Luminary:
         return Luminary(self.luminary)
+
+    @staticmethod
+    def create_from(game: Game, icon: Luminary, sector: int) -> 'Theory':
+        actual_icon = game.get_sectors()[sector]
+        return Theory.objects.create(
+            game=game,
+            time_count_created=game.time_count,
+            luminary=icon.value,
+            sector=sector,
+            time_count_reviewed=game.time_count + 6,
+            score=icon.score() if icon in actual_icon else 0
+        )
 
 # class Move(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

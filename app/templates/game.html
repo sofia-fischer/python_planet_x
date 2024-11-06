@@ -7,10 +7,18 @@
         <div class="bg-slate-800 my-6 p-3 text-white rounded text-center max-w-2xl">
             <div class="flex justify-evenly m-3">
                 <div class="text-teal-400">Game <span class="font-bold">{{ game_id }}</span></div>
-                <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700 box-border "
-                        onclick="toggleModal()">
-                    Action
-                </button>
+                {% if score != 0 %}
+                    <div class="text-teal-400" titel="You receive score points for correct theories
+                        (2 for Moon, 3 for Asteroid, 4 for Dwarf Planet, and 4 for Nebula), 10 for finding Planet X,
+                        and 1 point for each time unit you finish before time unit 16.">
+                        ✨You won with Score ✨<span class="font-bold">{{ score }}✨</span>
+                    </div>
+                {% else %}
+                    <button class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700 box-border "
+                            onclick="toggleModal()">
+                        Action
+                    </button>
+                {% endif %}
                 <button formaction="/game/{{ game_id }}/save" form="nightsky"
                         class="right-0 h-8 px-5 rounded bg-teal-600 text-white hover:bg-teal-700 box-border"
                         type="submit">
@@ -78,13 +86,13 @@
                                 {{ sector.index | add:1 }}
                             </div>
 
-                            {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x %}
-                            {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space %}
-                            {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula %}
-                            {% include "icon.html" with icon="DWARF_PLANET" index=sector.index filled=sector.planet %}
-                            {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid %}
+                            {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x correct=sector.correct_planet_x %}
+                            {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space correct=sector.correct_empty_space %}
+                            {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula correct=sector.correct_nebula %}
+                            {% include "icon.html" with icon="DWARF_PLANET" index=sector.index filled=sector.planet correct=sector.correct_planet %}
+                            {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid correct=sector.correct_asteroid %}
                             {% if sector.can_have_moon %}
-                                {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon %}
+                                {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon correct=sector.correct_moon %}
                             {% else %}
                                 <li class="m-4"></li>
                             {% endif %}
@@ -99,15 +107,15 @@
                             bg-slate-800 border-teal-400 {% if sector.visible_sky %} border-2 {% endif %} ">
 
                             {% if sector.can_have_moon %}
-                                {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon %}
+                                {% include "icon.html" with icon="MOON" index=sector.index filled=sector.moon correct=sector.correct_moon %}
                             {% else %}
                                 <li class="m-4"></li>
                             {% endif %}
-                            {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid %}
-                            {% include "icon.html" with icon="DWARF_PLANET" index=sector.index filled=sector.planet %}
-                            {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula %}
-                            {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space %}
-                            {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x %}
+                            {% include "icon.html" with icon="ASTEROID" index=sector.index filled=sector.asteroid correct=sector.correct_asteroid %}
+                            {% include "icon.html" with icon="DWARF_PLANET" index=sector.index filled=sector.planet correct=sector.correct_planet %}
+                            {% include "icon.html" with icon="NEBULA" index=sector.index filled=sector.nebula correct=sector.correct_nebula %}
+                            {% include "icon.html" with icon="EMPTY_SPACE" index=sector.index filled=sector.empty_space correct=sector.correct_empty_space %}
+                            {% include "icon.html" with icon="PLANET_X" index=sector.index filled=sector.planet_x correct=sector.correct_planet_x %}
 
                             <div class="md:bg-slate-500 rounded-full md:px-1 text-xs md:text-slate-800 text-slate-400">
                                 {{ sector.index | add:1 }}
@@ -241,7 +249,7 @@
 
                 <div class="my-2 bg-slate-600 rounded p-2">
                     <div class="flex flex-wrap">
-                        <label for="theory_icon" class="min-w-fit pt-1">Public the Theory that in Sector</label>
+                        <label for="theory_sector" class="min-w-fit pt-1">Public the Theory that in Sector</label>
                         <select id="theory_sector" name="theory_sector" form="nightsky"
                                 class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
                                 style="appearance: none;">
@@ -272,6 +280,54 @@
                         Dwarf Planet, and 4 for Nebula.
                         <br>
                         This Action will take 0 ⏳, but it can only happen instantly after crossing a theory time (📝).
+                    </div>
+                </div>
+
+                <div class="my-2 bg-slate-600 rounded p-2">
+                    <div class="flex flex-wrap">
+                        <label for="locate_sector" class="min-w-fit pt-1">Locate Planet X at Sector </label>
+                        <select id="locate_sector" name="locate_sector" form="nightsky"
+                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
+                                style="appearance: none;">
+                            {% for sector in board.sectors %}
+                                <option value="{{ sector.index }}"> {{ sector.index | add:1 }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="locate_predecessor" class="min-w-fit pt-1">precessed by </label>
+                        <select id="locate_predecessor" name="locate_predecessor" form="nightsky"
+                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
+                                style="appearance: none">
+                            <option value="MOON"> Moon</option>
+                            <option value="ASTEROID"> Asteroid</option>
+                            <option value="DWARF_PLANET"> Dwarf Planet</option>
+                            <option value="NEBULA"> Nebula</option>
+                            <option value="EMPTY_SPACE"> Empty Space</option>
+                        </select>
+
+                        <label for="locate_successor" class="min-w-fit pt-1">and succeeded by </label>
+                        <select id="locate_successor" name="locate_successor" form="nightsky"
+                                class="pl-3 pr-2 py-1 mx-2 rounded-full bg-teal-600 hover:bg-teal-500 text-sm h-fit"
+                                style="appearance: none">
+                            <option value="MOON"> Moon</option>
+                            <option value="ASTEROID"> Asteroid</option>
+                            <option value="DWARF_PLANET"> Dwarf Planet</option>
+                            <option value="NEBULA"> Nebula</option>
+                            <option value="EMPTY_SPACE"> Empty Space</option>
+                        </select>
+
+                        <button formaction="/game/{{ game_id }}/locate" type="submit" form="nightsky"
+                                class="py-1 px-3 rounded bg-teal-600 hover:bg-teal-500 ml-auto">
+                            Locate Planet X
+                        </button>
+                    </div>
+
+                    <div class="text-xs my-2">
+                        Locate Planet X by guessing the sector it is in as well as the celestial body that is in the
+                        sector before (predecessor) and after (successor) it.
+                        <br>
+                        This Action will take 5 ⏳. If you are correct you will receive 10 additional score points and
+                        end the game.
                     </div>
                 </div>
 

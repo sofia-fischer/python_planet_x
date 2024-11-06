@@ -81,3 +81,20 @@ class Luminary(Flag):
     @staticmethod
     def options() -> dict[int, str]:
         return {option.value: (option.name if option.name else 'None') for option in list(Luminary)}
+
+    @staticmethod
+    def from_string(string: str) -> 'Luminary':
+        match string:
+            case Luminary.MOON.name:
+                return Luminary.MOON
+            case Luminary.DWARF_PLANET.name:
+                return Luminary.DWARF_PLANET
+            case Luminary.ASTEROID.name:
+                return Luminary.ASTEROID
+            case Luminary.NEBULA.name:
+                return Luminary.NEBULA
+            case Luminary.PLANET_X.name:
+                return Luminary.PLANET_X
+            case _:
+                return Luminary.EMPTY_SPACE
+

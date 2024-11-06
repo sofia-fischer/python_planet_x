@@ -141,12 +141,13 @@ class NotWithinNSectorsRule(BaseRule):
     count: int
 
     def valid(self, sectors: Sectors) -> str | None:
-        for index, luminary in sectors:
-            if self.icon not in luminary:
-                continue
+        indices_with_icon = [index for index, luminary in sectors if self.icon in luminary]
 
-            for count in range(1, self.count):
+        for index in indices_with_icon:
+            for count in range(0, self.count + 1):
                 if self.other_icon in sectors[(index + count) % sectors.COUNT]:
+                    return f"{self.icon.to_string()} is within {self.count} sectors of {self.other_icon.to_string()}."
+                if self.other_icon in sectors[(index - count) % sectors.COUNT]:
                     return f"{self.icon.to_string()} is within {self.count} sectors of {self.other_icon.to_string()}."
         return None
 
@@ -165,8 +166,10 @@ class WithinNSectorsRule(BaseRule):
 
         for index in indices_with_icon:
             found_other_icon = False
-            for count in [count % sectors.COUNT for count in range(index, index + self.count)]:
+            for count in range(0, self.count + 1):
                 if self.other_icon in sectors[(index + count) % sectors.COUNT]:
+                    found_other_icon = True
+                if self.other_icon in sectors[(index - count) % sectors.COUNT]:
                     found_other_icon = True
             if not found_other_icon:
                 return f"{self.icon.to_string()} is not within {self.count} sectors of {self.other_icon.to_string()}."
@@ -174,3 +177,27 @@ class WithinNSectorsRule(BaseRule):
 
     def description(self) -> str:
         return f"{self.icon.to_string()} is always within {self.count} sectors of {self.other_icon.to_string()}."
+
+
+@dataclass
+class PlanetXLocationRule(BaseRule):
+    # Predecessor
+    icon: Luminary
+    sector: int
+    # Successor
+    other_icon: Luminary
+
+    def valid(self, sectors: Sectors) -> str | None:
+        error = (f"Planet X is NOT correctly located in sector {self.sector + 1} "
+                 f"with {self.icon.to_string()} as predecessor and {self.other_icon.to_string()} as successor.")
+        if Luminary.PLANET_X not in sectors[self.sector]:
+            return error
+        if self.icon not in sectors[(self.sector - 1) % sectors.COUNT]:
+            return error
+        if self.other_icon not in sectors[(self.sector + 1) % sectors.COUNT]:
+            return error
+        return None
+
+    def description(self) -> str:
+        return (f"Planet X was located in sector {self.sector + 1} "
+                f"with {self.icon.to_string()} as predecessor and {self.other_icon.to_string()} as successor.")

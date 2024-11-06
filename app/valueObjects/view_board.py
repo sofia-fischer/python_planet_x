@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.models import Theory
-from app.services.board_service import GenerationService
+from app.services.sector_service import GenerationService
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import BaseRule
 from app.valueObjects.sectors import Sectors
@@ -20,16 +20,15 @@ class ViewRule:
     def create_from_theory(theory: Theory, time_count: int) -> 'ViewRule':
         if time_count < theory.time_count_reviewed:
             description = f"In sector {theory.sector + 1} should be {theory.get_luminary().to_string()}"
-            origin = f"Theory ({theory.time_count_created}), in review ({theory.time_count_reviewed})"
+            origin = f"📝❔Theory ({theory.time_count_created})"
             return ViewRule(description, origin)
         if theory.score == 0:
             description = f"In sector {theory.sector + 1} is no {theory.get_luminary().to_string()}"
-            origin = f"Theory ({theory.time_count_created}), reviewed FALSE ({theory.time_count_reviewed})"
+            origin = f"📝❌ Theory ({theory.time_count_created})"
             return ViewRule(description, origin)
         description = f"In sector {theory.sector + 1} is {theory.get_luminary().to_string()}"
-        origin = f"Theory ({theory.time_count_created}), reviewed CORRECT ({theory.time_count_reviewed})"
+        origin = f"📝✅ Theory ({theory.time_count_created})"
         return ViewRule(description, origin)
-
 
 @dataclass
 class ViewSector:
@@ -42,9 +41,16 @@ class ViewSector:
     nebula: bool
     empty_space: bool
     can_have_moon: bool
+    # solution
+    correct_moon: bool = False
+    correct_planet: bool = False
+    correct_planet_x: bool = False
+    correct_asteroid: bool = False
+    correct_nebula: bool = False
+    correct_empty_space: bool = False
 
     @staticmethod
-    def create_from(sectors: Sectors, index: int, timer: int) -> 'ViewSector':
+    def create_from(sectors: Sectors, index: int, timer: int, solution: Luminary|None) -> 'ViewSector':
         visible_start = timer % Sectors.COUNT
         visible_indices = {visible % Sectors.COUNT for visible in
                            range(visible_start, visible_start + (Sectors.COUNT // 2))}
@@ -58,7 +64,13 @@ class ViewSector:
             asteroid=Luminary.ASTEROID in sectors[index],
             nebula=Luminary.NEBULA in sectors[index],
             empty_space=Luminary.EMPTY_SPACE in sectors[index],
-            can_have_moon=index in GenerationService.POSSIBLE_MOON_SECTORS
+            can_have_moon=index in GenerationService.POSSIBLE_MOON_SECTORS,
+            correct_moon=solution == Luminary.MOON,
+            correct_planet=solution == Luminary.DWARF_PLANET,
+            correct_planet_x=solution == Luminary.PLANET_X,
+            correct_asteroid=solution == Luminary.ASTEROID,
+            correct_nebula=solution == Luminary.NEBULA,
+            correct_empty_space=solution == Luminary.EMPTY_SPACE
         )
 
 
@@ -68,8 +80,9 @@ class ViewBoard:
     timer: int
 
     @staticmethod
-    def create_from(board: Sectors, timer: int) -> 'ViewBoard':
-        sectors = [ViewSector.create_from(board, index, timer) for index in range(0, Sectors.COUNT)]
+    def create_from(board: Sectors, timer: int, solution: Sectors|None = None) -> 'ViewBoard':
+        sectors = [ViewSector.create_from(board, index, timer, solution[index] if solution else None)
+                   for index in range(0, Sectors.COUNT)]
         return ViewBoard(sectors, timer)
 
     def visible_degree(self) -> int:

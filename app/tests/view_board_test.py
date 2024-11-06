@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from app.services.board_service import GenerationService
+from app.services.sector_service import GenerationService
 from app.valueObjects.view_board import ViewBoard
 
 

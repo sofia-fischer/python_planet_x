@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from app.services.board_service import GenerationService
 from app.services.rule_service import RuleService
+from app.services.sector_service import GenerationService
 from app.valueObjects.rules import NotInSectorRule
 
 

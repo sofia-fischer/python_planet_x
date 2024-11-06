@@ -1,6 +1,6 @@
 from random import choice, randrange, shuffle
 
-from app.services.board_service import GenerationService
+from app.services.sector_service import GenerationService
 from app.valueObjects.luminary import Luminary
 from app.valueObjects.rules import (
     BandOfSectorsRule,

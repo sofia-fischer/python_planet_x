@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from app.models import Board, Game
+from app.services.game_service import GameService
 
 
 class ModelsTest(TestCase):
@@ -19,9 +20,8 @@ class ModelsTest(TestCase):
             self.assertTrue(True)
 
     def test_crud_board(self) -> None:
-        game = Game.create_game()
-        game.save()
-        board = Board.create_board(game)
+        game = GameService.create_game()
+        board = Board.objects.get(game_id=game.id)
         self.assertIsNotNone(game.get_sectors())
         self.assertEqual(board.game.id, game.id)
         game.delete()
